@@ -10,10 +10,10 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'		=> 'FameHLI::API::HLI',
-    'VERSION_FROM'	=> 'HLI.pm',					# finds $VERSION
-    'PREREQ_PM'		=> {},							# e.g., Module::Name => 1.1
-    'LIBS'		=> [''],							# e.g., '-lm'
-	'OBJECT'	=> 'HLI.o ${HLI}/libchli.a',		# .o files
-    'DEFINE'		=> '',							# e.g., '-DHAVE_SOMETHING'
-    'INC'		=> '-I${FAME}/hli -L${FAME}/hli',	# include path
+    'VERSION_FROM'	=> 'HLI.pm',
+    'PREREQ_PM'		=> {},
+    'LIBS'		=> ["-L$ENV{HLI} -lchli"],
+	'OBJECT'	=> 'HLI.o',
+    'DEFINE'		=> '',
+    'INC'		=> "-I$ENV{HLI}",
 );

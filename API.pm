@@ -8,7 +8,7 @@
 package FameHLI::API;
 
 use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 require Exporter;
 require DynaLoader;
@@ -18,7 +18,7 @@ require AutoLoader;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-our	%EXPORT_TAGS = (
+%EXPORT_TAGS = (
 	'all'	=> [ qw(
 		Cfmini
 		Cfmver
@@ -53,7 +53,6 @@ our	%EXPORT_TAGS = (
 		Cfmgdat
 		Cfmwhat
 		Cfmncnt
-		Cfmdlen
 		Cfmsdes
 		Cfmsdoc
 		Cfmsbas
@@ -63,7 +62,6 @@ our	%EXPORT_TAGS = (
 		Cfmgnam
 		Cfmgtali
 		Cfmsali
-		Cfmnlen
 		Cfmgsln
 		Cfmssln
 		Cfmgtaso
@@ -121,14 +119,16 @@ our	%EXPORT_TAGS = (
 		Cfmferr
 	) ] );
 
-our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
-our	@EXPORT = qw(
+@EXPORT = qw(
 );
 
-$VERSION = '1.000';
+$VERSION = '1.100';
 
 bootstrap FameHLI::API $VERSION;
+
+FameHLI::API::Cfmini();
 
 # Preloaded methods go here.
 
@@ -139,8 +139,9 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 Dave Oberholtzer (daveo@obernet.com) and Measurisk.
-All rights reserved.  This program is free software; you can
+Copyright (c) 2001, 2002 Dave Oberholtzer (daveo@obernet.com)
+and Measurisk.  All rights reserved.
+This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
 =head1 DISCLAIMER
@@ -160,13 +161,19 @@ and in some cases not written (see notes below).
 My sense of humor is a bit dry.  As this moves up the revision ladder, I
 will try to tone it down a bit.
 
+=head1 CHANGES
+
+The 1.1 release includes changes sent in by Daniel Martin of Fame
+Information Services which clean up some initialization issues as
+well as enabling compilation on Windows with 'nmake'.
+
 =head1 NAME
 
 FameHLI::API consists of:
 
     FameHLI::API - Perl5 port of Fame C-HLI functions
     FameHLI::API::HLI - port of Fame hli.h variables
-    FameHLI::API::EXT - helper function
+    FameHLI::API::EXT - helper functions
 
 
 =head1 SYNOPSIS
@@ -176,7 +183,7 @@ are implemented using the same name as the C-HLI functions
 with the I<FameHLI::API::> prefix and a capital first letter.
 
     use FameHLI::API;
-    use FameHLI::API::HLI(:all);
+    use FameHLI::API::HLI	':all';
     my $rc;
     $rc = FameHLI::API::Cfmini();
     if ($rc != HSUCC) {
@@ -270,17 +277,17 @@ access the first element of an array reference you would use:
 
     my $val;
     my $rc = FameHLI::API::Cfmrrng($dbkey, $objname, $range,
-				$valary, HNTMIS, $mistt);
-	if ($rc == HSUCC) {
+                $valary, HNTMIS, $mistt);
+    if ($rc == HSUCC) {
         $val = $valary->[0];
     } else {
-my		$msg = "Error accessing $objname! "
-			. FameHLI::API::EXT::ErrDesc($rc);
-		carp($msg);
+        my $msg = "Error accessing $objname! "
+            . FameHLI::API::EXT::ErrDesc($rc);
+        carp($msg);
     }
 
 You noted, of course, that since Missing Values translation
-tables aren't supported you opted for "No Translation of
+tables aren't supported we opted for "No Translation of
 Missing Values".  The C<$mistt> can be any scalar as it will
 be completely ignored.  I do not ignore C<tmiss> so you
 will get very unpredictable results if you specify anything
@@ -323,6 +330,8 @@ on your system.  (www.fame.com)  (tested with 8.0 and 9.035)
 =item *
 
 Perl and a compiler (this port was tested with Perl 5.6.0 and gcc 2.95.2)
+or, alternatively, Microsoft VC++ and ActiveState Perl (this port
+was tested with VC++ 6.0 and ActiveState Perl 5.6.0).
 
 =item *
 
@@ -341,17 +350,19 @@ set as noted in the Fame documentation.
 
 Building the module is handled in the standard way.  There is a
 pre-test which checks for the $FAME and $HLI environment variables
-and then checks for "hli.h" and "libchli.so".  Passing that, it
-continues on in the normal fashion.
+and then checks for "hli.h" and "libchli.so" or "chli.lib".
+Passing that, it continues on in the normal fashion.
 
-'make test' runs a suite of test scripts (located in the "t/" 
+'[n]make test' runs a suite of test scripts (located in the "t/" 
 subdirectory).  These tests leave associated "*.log" files in the
 build directory.  The names of the tests will look familiar if you
 have seen the outline of the on-line Fame HELP Index.
 
-Before running 'make test' you should copy the "PWD.sample"
+Before running '[n]make test' you should copy the "PWD.sample"
 file to the parent directory as "PWD" and edit it to contain valid
 values.  Refer to the PWD section under FILES below.
+
+=head2 Building in Solaris
 
     perl Makefile.PL
 
@@ -364,6 +375,23 @@ and then
     make
     make test
 
+=head2 Building in Windows
+
+First, make sure that your environment is set up properly.  This means
+that you need FAME in the path and you need the compiler settings
+available for 'nmake'.
+
+    /<VisualStudio>/VC98/BIN/vcvars32.bat
+    path %PATH%;%FAME%
+
+Next, go to the directory where FameHLI has been unpacked and
+make the package.
+
+    cd /<code>/FameHLI
+    perl Makefile.PL
+    nmake
+    nmake test
+
 =head1 INSTALLATION
 
 'make install' will install the module in the normal way.  If
@@ -374,7 +402,7 @@ that either the given directory is in the PERL5LIB library path
 or you have the command "use lib '/your/path/to/lib';" in your
 program before the module can be used.
 
-    make install
+    [n]make install
 
 =head1 PORTABILITY
 
@@ -383,6 +411,8 @@ This module was developed and tested under the following conditions:
    - Developed with Perl 5.6.0 on Solaris 2.6
    - Compiled using 'gcc' version 2.95.2
    - Tested on Solaris 2.6 using Fame 8.032 and 9.035
+   - Compiled using 'MS VC++' version 6.0
+   - Tested on Windows NT5/2000 using Fame 8.032
 
 =head1 FILES
 
@@ -456,13 +486,11 @@ SPINDATE - the date of the SPINDEX database
 
 =head1 CAVEATS (Bugs/Features)
 
-This module has not yet been tested against a Windows 
-installation.  If you do try it there and it works, please
-let me know.  If it doesn't work, please let me know how
-you fixed it. :-)  I will attempt to get those fixes in
-the next release.
+As with any software product there are some shortcomings
+which are excused away with a Caveats section.  I do not want
+to buck the trend so here goes.
 
-=head2 And Speaking of Windows
+=head2 Windows and HDMODE
 
 At the time of this writing, HDMODE does not work correctly
 (or at all) on Windows NT.  This is a known condition and
@@ -639,8 +667,11 @@ the way Perl programmers are used to working.
 Both FameLayer and FameHLI::API were developed because I wanted
 to get at the FAME 8.0 HDMODE functionality and because I
 didn't want to be tied to any given MCADBS process.  The 
-result is a package written entirely in XS which may be
-portable to Windows (although I haven't tried it yet).
+result is a package written entirely in XS.
+The package has been compiled on Windows with VC++ 6.0 and 
+ActiveState Perl v5.6.0.  It passes all tests in the test
+suite and a couple of simple scripts that I wrote to check
+basic functionality.
 
 =head1 IF YOU MUST KNOW
 

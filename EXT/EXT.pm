@@ -7,8 +7,9 @@
 ;#=============================================================================
 package FameHLI::API::EXT;
 
+use	FameHLI::API;
 use strict;
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
+use vars qw($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
 require Exporter;
 require DynaLoader;
@@ -18,7 +19,7 @@ require AutoLoader;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-our	%EXPORT_TAGS = ( 'all'	=>	[ qw(
+%EXPORT_TAGS = ( 'all'	=>	[ qw(
 		FormatDate
 		AccessModeDesc
 		BasisDesc
@@ -34,12 +35,12 @@ our	%EXPORT_TAGS = ( 'all'	=>	[ qw(
 		WeekdayDesc
 	) ] );
 
-our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
-our	@EXPORT = qw(
+@EXPORT = qw(
 );
 	
-$VERSION = '1.000';
+$VERSION = '1.100';
 
 bootstrap FameHLI::API::EXT $VERSION;
 

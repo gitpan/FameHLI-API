@@ -13,10 +13,10 @@ if (!$ENV{HLI}) {
 }
 WriteMakefile(
     'NAME'	=> 'FameHLI::API::EXT',
-    'VERSION_FROM' => 'EXT.pm',					# finds $VERSION
-    'LIBS'	=> [''],							# e.g., '-lm' 
-    'OBJECT' => 'EXT.o ${HLI}/libchli.a',		# .o files
-    'DEFINE'	=> '',							# e.g., '-DHAVE_SOMETHING' 
-    'INC'	=> '-I${FAME}/hli -L${FAME}/hli',	# include path
+    'VERSION_FROM' => 'EXT.pm',
+    'LIBS'	=> ["-L$ENV{HLI} -lchli"],
+    'OBJECT' => 'EXT.o',
+    'DEFINE'	=> '',
+    'INC'	=> "-I$ENV{HLI}",
 );
 

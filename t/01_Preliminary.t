@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..7\n"; }
+BEGIN { $| = 1; print "1..6\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -42,9 +42,12 @@ my		$log = StartTest("01_Preliminary");
 ;#		------------------------------------------------------------
 		printf($log "--> Using the HLI\n");
 ;#		------------------------------------------------------------
+;#		Since cfmini is automagically called, we cannot test for
+;#		failing to initialize...  so sad...
+;#		------------------------------------------------------------
 my		$ver;
 
-		ShowResults($log, 1,HNINIT,"cfmver", Cfmver($ver), "Failed properly");
+;#		ShowResults($log, 1,HNINIT,"cfmver", Cfmver($ver), "Failed properly");
 		ShowResults($log, 1,0,"cfmini", Cfmini());
 		ShowResults($log, 1,0,"cfmver", Cfmver($ver), "%4.4f", $ver);
 

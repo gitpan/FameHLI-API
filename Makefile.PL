@@ -13,18 +13,41 @@
 #=============================================================================
 
 use ExtUtils::MakeMaker;
+use	File::Spec;
 
 {
 my		$missing = 0;
 
 		print("\nChecking Environment Variables\n\n");
 		$missing += PrintCheck("FAME", $ENV{FAME}, $ENV{FAME});
-		$missing += PrintCheck("HLI", $ENV{HLI}, $ENV{HLI});
+		if (!$missing) {
+			$missing += PrintCheck("HLI", $ENV{HLI}, $ENV{HLI});
+			if ($missing) {
+				print("HLI variable not set.  Hunting for hli.h...\n");
+				if ((-d "$ENV{FAME}/hli") && (-f "$ENV{FAME}/hli/hli.h")) {
+					# Perl understands mixed \ and / on NT, but nmake doesn't
+					$ENV{HLI} = File::Spec->catdir($ENV{FAME}, "hli");
+					$missing = 0;
+				} elsif (-f "$ENV{FAME}/hli.h") {
+					$ENV{HLI} = $ENV{FAME};
+					$missing = 0;
+				} else {
+					print("Can't find hli.h!"
+						.	"  Please set HLI environment variable.\n");
+				}
+			}
+		}
 
 		if (!$missing) {
 			print("\nChecking for required files\n\n");
 			$missing += PrintCheck("hli.h", -f "$ENV{HLI}/hli.h");
+;#		------------------------------------------------------------------
+;#		Only one of these next two can work so we check for both and
+;#		then decrement the result. (Thanks, Daniel)
+;#		------------------------------------------------------------------
 			$missing += PrintCheck("libchli.so", -f "$ENV{HLI}/libchli.so");
+			$missing += PrintCheck("chli.lib", -f "$ENV{HLI}/chli.lib");
+			$missing--;
 		}
 
 		if ($missing) {
@@ -38,10 +61,10 @@ my		$missing = 0;
 		WriteMakefile(
     		'NAME'			=>	'FameHLI::API',
     		'VERSION_FROM'	=>	'API.pm',
-    		'LIBS'			=>	[''],
-    		'OBJECT'		=>	'API.o ${HLI}/libchli.so',
+    		'LIBS'			=>	["-L$ENV{HLI} -lchli"],
+    		'OBJECT'		=>	'API.o',
     		'DEFINE'		=>	'',
-    		'INC'			=>	'-I${HLI} -L${HLI}',
+    		'INC'			=>	"-I$ENV{HLI}",
 		);
 }
 

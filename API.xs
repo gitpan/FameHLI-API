@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: API.xs,v 1.1 2001/04/19 04:33:17 datadev Exp datadev $
+**	Rev:	$Id: API.xs,v 1.2 2001/09/10 23:14:20 datadev Exp $
 **	Use:	Access to  FAME functions in other platforms.
 ******************************************************************************
 **	This library is an abstraction layer for FAME C-HLI functions
@@ -36,7 +36,7 @@
 //***************************************************************************
 //***************************************************************************
 static	int		status = 0;
-static	int		xx_cnt = 0;
+static	int		cfmini_status = 0;
 
 
 //***************************************************************************
@@ -78,7 +78,8 @@ MODULE = FameHLI::API		PACKAGE = FameHLI::API		PREFIX = perl_
 
 BOOT:
 		status = HSUCC;
-#*		printf("This is the Boot code.\n");
+		cfmini_status = HSUCC;
+		cfmini(&cfmini_status);
 
 
 #*
@@ -104,13 +105,18 @@ BOOT:
 #*===========================================================================
 #*		cfmini		F A M E   L I B R A R Y   I N I T I A L I Z A T I O N
 #*===========================================================================
-#*		Tested	2000/10/10
+#*		This function allows people to re-initialize the HLI if necessary
+#*		(e.g. FAME environment variable needs setting inside the perl
+#*		script) but also so that it isn't necessary to call cfmini in the
+#*		common case of having everything set up first.
 #*=========================================================================*/
 int
 perl_Cfmini()
 	CODE:
-		cfmini(&status);
-		RETVAL = status;
+		if (cfmini_status != HSUCC) {
+			cfmini(&cfmini_status);
+		}
+		RETVAL = cfmini_status;
 	OUTPUT:
 		RETVAL
 

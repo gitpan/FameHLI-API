@@ -7,8 +7,14 @@
 #=============================================================================
 package FameHLI::API::HLI;
 
-require 5.6.0;
 use strict;
+use	vars	qw(	$VERSION
+				$AUTOLOAD
+				@ISA
+				@EXPORT
+				@EXPORT_OK
+				%EXPORT_TAGS
+				@DONT_EXPORT);
 use warnings;
 use Carp;
 
@@ -16,7 +22,7 @@ require Exporter;
 require DynaLoader;
 use AutoLoader;
 
-our @ISA = qw(Exporter DynaLoader);
+@ISA = qw(Exporter DynaLoader);
 
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
@@ -25,7 +31,7 @@ our @ISA = qw(Exporter DynaLoader);
 # This allows declaration	use FameHLI::API::HLI ':all';
 # If you do not need this, moving things directly into @EXPORT or @EXPORT_OK
 # will save memory.
-our %EXPORT_TAGS = ( 'all' => [ qw(
+%EXPORT_TAGS = ( 'all' => [ qw(
 	FNUMND
 	FPRCND
 	GLOBAL
@@ -314,13 +320,13 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 	HYES
 ) ] );
 
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
 ;# h2xs created this with everything exported.  Hmmm...
 
-our @EXPORT = qw(
+@EXPORT = qw(
 );
-our @DONT_EXPORT = qw(
+@DONT_EXPORT = qw(
 	FNUMND
 	FPRCND
 	GLOBAL
@@ -608,7 +614,7 @@ our @DONT_EXPORT = qw(
 	HWRITE
 	HYES
 );
-our $VERSION = '1.000';
+$VERSION = '1.100';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -616,7 +622,6 @@ sub AUTOLOAD {
     # to the AUTOLOAD in AutoLoader.
 
     my $constname;
-    our $AUTOLOAD;
     ($constname = $AUTOLOAD) =~ s/.*:://;
     croak "& not defined" if $constname eq 'constant';
     my $val = constant($constname, @_ ? $_[0] : 0);

@@ -1,6 +1,32 @@
 Revision history for Perl extension FameHLI.
 
-1.000 Sometime...
+1.100 Tue Feb 12, 2002
+
+    Most of the changes in this release came from Daniel Martin of
+    Fame Information Services.  He answered the question "If anyone
+    can figure out how to get this to work in Windows..."
+
+    He did.
+
+    FameHLI::all
+    - Removed the reference to <strings.h>.
+    - Changed the Exporter variables to use "use vars qw()" instead
+      of "our" so that older versions of Perl can compile the module.
+    - Modified the Makefile.PL in a number of ways so that 'nmake'
+      will work on Windows.
+    - Modified the Makefile.PL to more intelligently check paths
+      for hli.h and library files on either Unix or Windows.
+    FameHLI::API
+    - cfmini() is now called in bootstrapping the module and Cfmini()
+      allows you to call it multiple times.  It will simply return
+      the HSUCC if it ever succeeded or the most recent status.  This
+      allows you to check (in your program) if $FAME is set and
+      recover if it isn't.
+    FameHLI::API/tests
+    - Removed the test for Cfmver() failing prior to calling
+      Cfmini() since that is called automagically occuring boot.
+
+1.000 Mon Sep 10, 2001
 
     FameHLI::API
     - Some of the noted fixes here may have happened in an earlier

@@ -4,7 +4,7 @@
 //	Author:	David Oberholtzer, (daveo@obernet.com)
 //			Copyright (c)2001, David Oberholtzer and Measurisk.
 //	Date:	2001/04/18
-//	Rev:	$Id: $
+//	Rev:	$Id: EXT.xs,v 1.1 2002/02/12 18:42:09 datadev Exp datadev $
 //	Use:	Access to  FAME textual messages
 //****************************************************************************
 #include "EXTERN.h"
@@ -921,7 +921,7 @@ char	*ptr;
 MODULE = FameHLI::API::EXT		PACKAGE = FameHLI::API::EXT		PREFIX = perl_
 
 BOOT:
-		cfmini(&status);
+#*		cfmini(&status);
 		status = 0;
 
 

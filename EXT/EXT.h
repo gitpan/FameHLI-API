@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: $
+**	Rev:	$Id: EXT.h,v 1.1 2002/02/12 18:42:09 datadev Exp datadev $
 **	Use:	Access to  FAME functions in other platforms.
 *****************************************************************************/
 
@@ -12,7 +12,6 @@
 #define	__FAMEHLI_API_EXT__
 
 #include <string.h>
-#include <strings.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h>
