@@ -1,9 +1,10 @@
 ;#=============================================================================
 ;#	File:	FameHLI-API.pm
 ;#	Author:	Dave Oberholtzer (daveo@fametoys.com)
-;#			Copyright (c)2001, David Oberholtzer and Measurisk.
+;#			Copyright (c)2005, David Oberholtzer
 ;#	Date:	2001/03/23
 ;#	Use:	Access to FAME from Perl
+;#	Mod:	2005/03/15 daveo: updated comments
 ;#=============================================================================
 package FameHLI::API;
 
@@ -124,7 +125,7 @@ require AutoLoader;
 @EXPORT = qw(
 );
 
-$VERSION = '2.001';
+$VERSION = '2.101';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -139,8 +140,8 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001, 2002, 2003 Dave Oberholtzer (daveo@fametoys.com)
-and Measurisk, LLC (www.measurisk.com).  All rights reserved.
+Copyright (c) 2005 Dave Oberholtzer (daveo@obernet.com)
+All rights reserved.
 This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
@@ -168,6 +169,19 @@ My sense of humor is a bit dry.  As this moves up the revision ladder, I
 may try to tone it down a bit.
 
 =head1 CHANGES
+
+2.101 fixes a problem with I<FameHLI::API::Cfmwstr> where
+there was an artificial limit of 255 characters hardcoded.  This
+limit is valid in another function (I don't rememeber which) but
+not here.
+
+The 2.100 release includes Makefile tests to see if interactive
+Fame works.  This is because lesstif (in Linux) was changed from
+X11 to x.org.  If you don't have a working lesstif then you cannot
+use cfmfame or the mcadbs.  You can still perform everything else
+so those tests are skipped.  Additionally, the "Missing Value"
+functions were updated to return a rational return code (read
+up in the "Missing Values" section below.)
 
 The 2.000 release may not really qualify for a major release jump
 but there were a number of significant internal enhancements as well
@@ -454,13 +468,15 @@ program before the module can be used.
 
 =head1 PORTABILITY
 
-This module was tested under the following conditions:
+This module was tested (at least) under the following conditions:
 
    - [OS version] / [Perl version] / [Compiler version] / [Fame version]
    - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 8.0.2
    - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.5
    - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.7
    - RedHat 8.0 / Perl 5.8.0 / gcc 3.2 / Fame 9.0.13
+   - RedHat 9.0 / Perl 5.8.5 / gcc 3.2.2 / Fame 9.0.13
+   - Fedora 3.0 / Perl 5.8.5 / gcc 3.4.2 / Fame 9.0.13
    - NT5/2000 / ActivePerl 5.6.0 / VC++ 6.0 / Fame 8.0.2
 
 It has NOT been succesfully tested on AIX.  If you would like to use
@@ -554,10 +570,15 @@ HDMODE did not work correctly in Fame versions 8.x
 
 Missing values are implemented as references to a string whose
 value (as would be expected) is "NA", "NC" or "ND".  Translation
-tables are not yet implemented.  Therefore, since references
-aren't valid in FameLand, you can check to see if any returned
-value is a reference.  If so, it is probably one of the 3
-Missing Values.  Simply dereference it to see which one.
+tables are not implemented and probably never will be.  
+Therefore, since references aren't valid in FameLand, you can 
+check to see if any returned value is a reference.  If so, it 
+is probably one of the 3 Missing Values.  Simply dereference it 
+to see which one.
+
+In versions starting with 2.100 the "Is Missing" and
+"Set to Missing" functions have been modified to simply 
+say "I don't work here" (HBCNTX).
 
 =head2 String Length arguments
 
@@ -599,12 +620,14 @@ will be dependent on demand.)
 
 =head2 RPM package for Linux
 
-After I find out from Fame Legal if it is allowed, I will look 
-into creating an RPM package.  The main issue here is that the
-Linux libchli is static and, therefore, the actual Fame object
-library will be linked statically into the package.  If this
-turns out to be an issue, maybe people can ask Fame to make
-a I<.so> (dynamically linked) library for Linux.
+Currently, the Linux version of the libchli library is static 
+and, therefore, the actual Fame object library would end up being
+linked statically into the package.  This is, reasonably, an issue
+for Fame since that could expose their intellectual property to
+"open source" conflicts.  If an RPM package is of interest, 
+maybe people can ask Fame to make a I<.so> (dynamically linked) 
+library for Linux.  I have heard that this may be in the works
+so it could be worth it to encourage them.
 
 =head2 ActiveState Perl Package
 
@@ -669,29 +692,12 @@ string and _know_ it is a missing value. [Done]
 
 =item *
 
-Decide if anybody really cares about the cfmis[bdnps]m or 
-cfms[bdnps]m functions.  Checking to see if a value is missing
-is achieved simply by seeing if it is a reference, no matter
-what data type it is.  I would actually write these functions
-as that type of implementation, but unless someone really 
-wants them, I do have better things to do.  Could somebody
-give me some feedback on this? [Not done]
-
-=item *
-
-cfmis[bdnps]m functions will need to look at the value, see
-that it is a reference, check the value pointed to and see
-if it is any of "NA", "NC" or "ND".  I considered using a
-single 'static' value for each missing value and having
-everybody point to that one but that seems too restrictive.
-[Not done]
-
-=item *
-
-cfms[bdnps]m functions would each contain a simple array
-of references to the scalars provided when calling them.
-No muss, no fuss, no casting.
-[Not done]
+It does not appear that anyone has any real use for the
+cfmis[bdnps]m or cfms[bdnps]m functions.  Since checking to see 
+if a value is missing is achieved simply by seeing if it is a 
+reference, no matter what data type it is, there really isn't
+any point.  These functions return HBCNTX "Doesn't work in 
+this context".  [Done]
 
 =back
 
@@ -709,7 +715,7 @@ L<perl(1)> L<FameHLI::API::HLI(3)> L<FameHLI::EXT(3)>.
 
 =head1 AUTHOR
 
-Dave Oberholtzer (daveo@fametoys.com) www.fametoys.com
+Dave Oberholtzer (daveo@obernet.com) www.fametoys.com
 
 =head1 HISTORY
 
@@ -730,7 +736,7 @@ docs' anyway so that shouldn't be a problem.
 
 This 'Fameish' port is designed specifically to match the
 FAME documentation as closely as possible (well, except for
-the 'status' thing).
+the 'status' thing and the Missing Value bits).
 
 =head2 This Port
 
@@ -864,7 +870,7 @@ These cases are noted with square braces around the argument.
 
 =head2 10 Handling Missing Values
 
-These are not implemented in such a way as you would want to use them.
+These are not functionally implemented.  They return HBCNTX.
 
  x Cfmsnm(nctran, ndtran, natran, table)
  x Cfmspm(nctran, ndtran, natran, table)

@@ -1,7 +1,7 @@
 #=============================================================================
 #	File:	Makefile.PL
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer.
 #	Date:	2001/04/18
 #	Use:	Create Makefile for FameHLI::API::EXT stuff
 #=============================================================================

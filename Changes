@@ -1,5 +1,33 @@
 Revision history for Perl extension FameHLI.
 
+2.101 Sun Mar 20, 2005
+    FameHLI::API
+    Cfmwstr had an artificial limit of 255 characters on any string
+    written.  This should be working correctly now.  Thanks to 
+    Tarik Adi for pointing this out.
+
+2.100 Tue Mar 15, 2005
+    FameHLI (Makefile.PL)
+	Since the Linux LessTif now uses x.org (Fedora 3 and RHEL4) there
+    is now a test to see if $FAME/fame will run.  If not, it could be
+    because libXm.so.1 can't be found.  We can still run everything
+    except Cfmfame and MCADBS so a test checks this and allows skipping
+    the tests that would fail otherwise.
+
+    FameHLI::API
+    Finally got around to making the Missing Value functions return
+    a "valid" return code to let you know that they don't really
+    work. Jeff Kaplan suggested using "Doesn't work in current context".
+    - Cfmsnm returns HBCNTX
+    - Cfmspm returns HBCNTX
+    - Cfmsbm returns HBCNTX
+    - Cfmsdm returns HBCNTX
+    - Cfmisnm returns HBCNTX
+    - Cfmispm returns HBCNTX
+    - Cfmisbm returns HBCNTX
+    - Cfmisdm returns HBCNTX
+    - Cfmissm returns HBCNTX
+
 2.001 Tue feb 8, 2005
     FameHLI::API
     Thanks to Ken Kingsbury for finding a buglet in Cfmwhat().  The

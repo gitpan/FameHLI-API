@@ -1,8 +1,12 @@
 COPYRIGHT
-    Copyright (c) 2001, 2002, 2003 Dave Oberholtzer (daveo@fametoys.com) and
-    Measurisk, LLC (www.measurisk.com). All rights reserved. This program is
-    free software; you can redistribute it and/or modify it under the same
-    terms as Perl itself.
+    Copyright (c) 2005 Dave Oberholtzer (daveo@obernet.com) All rights
+    reserved. This program is free software; you can redistribute it and/or
+    modify it under the same terms as Perl itself.
+
+NAME
+    This module is alternatively call FameHLI and PerlHLI. Both names are
+    correct and can be used somewhat interchangeably. PerlHLI is a bit more
+    specific since it is the Perl port of the Fame HLI.
 
 DISCLAIMER
     This doc is longer than it should be because in includes elements of
@@ -11,7 +15,7 @@ DISCLAIMER
     important.
 
     This release is considered to be basically stable. Please report any
-    problems that you may find to me at 'daveo@obernet.com' so that I can
+    problems that you may find to me at 'daveo@fametoys.com' so that I can
     address them.
 
     Please read about Missing Values (specifically that translation tables
@@ -19,9 +23,21 @@ DISCLAIMER
     not written (see notes below).
 
     My sense of humor is a bit dry. As this moves up the revision ladder, I
-    will try to tone it down a bit.
+    may try to tone it down a bit.
 
 CHANGES
+    2.101 fixes a problem with *FameHLI::API::Cfmwstr* where there was an
+    artificial limit of 255 characters hardcoded. This limit is valid in
+    another function (I don't rememeber which) but not here.
+
+    The 2.100 release includes Makefile tests to see if interactive Fame
+    works. This is because lesstif (in Linux) was changed from X11 to x.org.
+    If you don't have a working lesstif then you cannot use cfmfame or the
+    mcadbs. You can still perform everything else so those tests are
+    skipped. Additionally, the "Missing Value" functions were updated to
+    return a rational return code (read up in the "Missing Values" section
+    below.)
+
     The 2.000 release may not really qualify for a major release jump but
     there were a number of significant internal enhancements as well as
     porting the package to Linux. These changes include the Makefile, the
@@ -258,14 +274,20 @@ INSTALLATION
         [n]make install
 
 PORTABILITY
-    This module was developed and tested under the following conditions:
+    This module was tested (at least) under the following conditions:
 
-       - Developed with Perl 5.6.0 on Solaris 2.6
-       - Compiled using 'gcc' version 2.95.2 and 3.2
-       - Tested on Solaris 2.6 using Fame 8.032 and 9.035
-       - Tested on RedHat Linux 8.0 using Perl 5.8.0 and Fame 9.0.13
-       - Compiled using 'MS VC++' version 6.0
-       - Tested on Windows NT5/2000 using Fame 8.032
+       - [OS version] / [Perl version] / [Compiler version] / [Fame version]
+       - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 8.0.2
+       - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.5
+       - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.7
+       - RedHat 8.0 / Perl 5.8.0 / gcc 3.2 / Fame 9.0.13
+       - RedHat 9.0 / Perl 5.8.5 / gcc 3.2.2 / Fame 9.0.13
+       - Fedora 3.0 / Perl 5.8.5 / gcc 3.4.2 / Fame 9.0.13
+       - NT5/2000 / ActivePerl 5.6.0 / VC++ 6.0 / Fame 8.0.2
+
+    It has NOT been succesfully tested on AIX. If you would like to use it
+    on AIX then either see if it works for you or let us know that you plan
+    to use it there and we will see what (if anything) needs to be tweaked.
 
 FILES
     As with any installation using the Fame software, you will need current
@@ -317,17 +339,19 @@ CAVEATS (Bugs/Features)
     here goes.
 
   Windows and HDMODE
-    At the time of this writing, HDMODE does not work correctly (or at all)
-    on Windows NT. This is a known condition and Fame is working on a fix.
-    It should become available after the next NT build for Fame.
+    HDMODE did not work correctly in Fame versions 8.x (or at all) on
+    Windows NT. This has been fixed in Fame version 9.0.
 
   Missing Values
     Missing values are implemented as references to a string whose value (as
-    would be expected) is "NA", "NC" or "ND". Translation tables are not yet
-    implemented. Therefore, since references aren't valid in FameLand, you
-    can check to see if any returned value is a reference. If so, it is
-    probably one of the 3 Missing Values. Simply dereference it to see which
-    one.
+    would be expected) is "NA", "NC" or "ND". Translation tables are not
+    implemented and probably never will be. Therefore, since references
+    aren't valid in FameLand, you can check to see if any returned value is
+    a reference. If so, it is probably one of the 3 Missing Values. Simply
+    dereference it to see which one.
+
+    In versions starting with 2.100 the "Is Missing" and "Set to Missing"
+    functions have been modified to simply say "I don't work here" (HBCNTX).
 
   String Length arguments
     In any C-HLI function which returns a string, you are required to
@@ -360,12 +384,13 @@ TO DO LIST
     will be in later releases. (Order will be dependent on demand.)
 
   RPM package for Linux
-    After I find out from Fame Legal if it is allowed, I will look into
-    creating an RPM package. The main issue here is that the Linux libchli
-    is static and, therefore, the actual Fame object library will be linked
-    statically into the package. If this turns out to be an issue, maybe
-    people can ask Fame to make a *.so* (dynamically linked) library for
-    Linux.
+    Currently, the Linux version of the libchli library is static and,
+    therefore, the actual Fame object library would end up being linked
+    statically into the package. This is, reasonably, an issue for Fame
+    since that could expose their intellectual property to "open source"
+    conflicts. If an RPM package is of interest, maybe people can ask Fame
+    to make a *.so* (dynamically linked) library for Linux. I have heard
+    that this may be in the works so it could be worth it to encourage them.
 
   ActiveState Perl Package
     I am looking for a volunteer to help package the FameHLI into an
@@ -414,23 +439,11 @@ TO DO LIST
         in this way, you can actually see the "NA", "NC" or "ND" string and
         _know_ it is a missing value. [Done]
 
-    *   Decide if anybody really cares about the cfmis[bdnps]m or
-        cfms[bdnps]m functions. Checking to see if a value is missing is
-        achieved simply by seeing if it is a reference, no matter what data
-        type it is. I would actually write these functions as that type of
-        implementation, but unless someone really wants them, I do have
-        better things to do. Could somebody give me some feedback on this?
-        [Not done]
-
-    *   cfmis[bdnps]m functions will need to look at the value, see that it
-        is a reference, check the value pointed to and see if it is any of
-        "NA", "NC" or "ND". I considered using a single 'static' value for
-        each missing value and having everybody point to that one but that
-        seems too restrictive. [Not done]
-
-    *   cfms[bdnps]m functions would each contain a simple array of
-        references to the scalars provided when calling them. No muss, no
-        fuss, no casting. [Not done]
+    *   It does not appear that anyone has any real use for the
+        cfmis[bdnps]m or cfms[bdnps]m functions. Since checking to see if a
+        value is missing is achieved simply by seeing if it is a reference,
+        no matter what data type it is, there really isn't any point. These
+        functions return HBCNTX "Doesn't work in this context". [Done]
 
 RESTRICTIONS
     You will need to already have FAME installed on your system. This module
@@ -443,7 +456,7 @@ SEE ALSO
     perl(1) FameHLI::API::HLI(3) FameHLI::EXT(3).
 
 AUTHOR
-    Dave Oberholtzer (daveo@fametoys.com) www.fametoys.com
+    Dave Oberholtzer (daveo@obernet.com) www.fametoys.com
 
 HISTORY
   Various Ports
@@ -461,7 +474,7 @@ HISTORY
 
     This 'Fameish' port is designed specifically to match the FAME
     documentation as closely as possible (well, except for the 'status'
-    thing).
+    thing and the Missing Value bits).
 
   This Port
     The FameHLI::API module is a direct successor of the FameLayer written
@@ -581,7 +594,7 @@ IF YOU MUST KNOW
       Cfmufrq(freq, base, nunits, year, month)
 
   10 Handling Missing Values
-    These are not implemented in such a way as you would want to use them.
+    These are not functionally implemented. They return HBCNTX.
 
      x Cfmsnm(nctran, ndtran, natran, table)
      x Cfmspm(nctran, ndtran, natran, table)

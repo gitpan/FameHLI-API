@@ -2,7 +2,7 @@
 //	File:	EXT.xs
 //	Type:	Extension library (for Perl and friends)
 //	Author:	David Oberholtzer, (daveo@obernet.com)
-//			Copyright (c)2001, David Oberholtzer and Measurisk.
+//			Copyright (c)2005, David Oberholtzer.
 //	Date:	2001/04/18
 //	Rev:	$Id: EXT.xs,v 1.1 2003/06/18 02:29:32 daveo Exp daveo $
 //	Use:	Access to  FAME textual messages

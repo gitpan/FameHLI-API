@@ -1,9 +1,10 @@
 #=============================================================================
 #	File:	15_FameServer.t
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Mod:	2005/03/15 daveo: Added interactive tests
 #	Editor:	vi with tabstops=4
 #=============================================================================
 # Before `make install' is performed this script should be runnable with
@@ -74,28 +75,34 @@ my		$log = StartTest("15_FameServer");
 ;#		------------------------------------------------------------
 		printf($log "--> Using the FAME/Server\n");
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmopwk", Cfmopwk($work));
-		ShowResults($log, 1,0,"cfmfame", Cfmfame("fred = today"));
-		ShowResults($log, 1,0,"cfmwhat",
-			Cfmwhat($work, "fred",
-				$class, $type, $freq, $basis, $observ,
-				$fyear, $fprd, $lyear, $lprd,
-				$cyear, $cmonth, $cday,
-				$myear, $mmonth, $mday,
-				$desc, $doc),
-			"%s, %s, %s, %s, %s,\n"
-				. "\t\t%s, %s, %s, %s,\n"
-				. "\t\t%s/%s/%s,\n"
-				. "\t\t%s/%s/%s,\n"
-				. "\t\t%s, %s",
-			ClassDesc($class),
-			TypeDesc($type),
-			FreqDesc($freq),
-			BasisDesc($basis),
-			ObservedDesc($observ),
-			$lyear, $fprd, $lyear, $lprd,
-			$cyear, $cmonth, $cday, $myear, $mmonth, $mday,
-			$desc, $doc);
+		if (InteractiveFame()) {
+			ShowResults($log, 1,0,"cfmopwk", Cfmopwk($work));
+			ShowResults($log, 1,0,"cfmfame", Cfmfame("fred = today"));
+			ShowResults($log, 1,0,"cfmwhat",
+				Cfmwhat($work, "fred",
+					$class, $type, $freq, $basis, $observ,
+					$fyear, $fprd, $lyear, $lprd,
+					$cyear, $cmonth, $cday,
+					$myear, $mmonth, $mday,
+					$desc, $doc),
+				"%s, %s, %s, %s, %s,\n"
+					. "\t\t%s, %s, %s, %s,\n"
+					. "\t\t%s/%s/%s,\n"
+					. "\t\t%s/%s/%s,\n"
+					. "\t\t%s, %s",
+				ClassDesc($class),
+				TypeDesc($type),
+				FreqDesc($freq),
+				BasisDesc($basis),
+				ObservedDesc($observ),
+				$lyear, $fprd, $lyear, $lprd,
+				$cyear, $cmonth, $cday, $myear, $mmonth, $mday,
+				$desc, $doc);
+		} else {
+			SkipResults($log, 1,0,"cfmopwk", 0, "Interactive Fame failed");
+			SkipResults($log, 1,0,"cfmfame", 0, "Interactive Fame failed");
+			SkipResults($log, 1,0,"cfmwhat", 0, "Interactive Fame failed");
+		}
 
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());

@@ -1,9 +1,10 @@
 #=============================================================================
 #	File:	13_Reading.t
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Mod:	2005/03/15 daveo: Added interactive tests
 #	Editor:	vi with tabstops=4
 #=============================================================================
 # Before 'make install' is performed this script should be runnable with
@@ -17,7 +18,7 @@ BEGIN {
 	if (!$ENV{FAME}) {
         print "1..0 # Skipped: No FAME Environment Variable defined!\n";
         exit;
-    } else {
+	} else {
 		print "1..33\n";
     }
 }
@@ -110,8 +111,12 @@ my		@NCdata = NCData();
 my		@NDdata = NDData();
 my		@datetest = DateData();
 
-		ShowResults($log, 1,0,"cfmfame", 
-			Cfmfame("<freq b; date 1999m1> junk = uniform"));
+		if (InteractiveFame()) {
+			ShowResults($log, 1,0,"cfmfame", 
+				Cfmfame("<freq b; date 1999m1> junk = uniform"));
+		} else {
+			SkipResults($log, 1,0, "cfmfame", 0, "Interactive Fame failed");
+		}
 
 		ShowResults($log, 1,0,"cfmgtstr(normal)",
 			Cfmgtstr($dbkey, $strname, $rng, $strval),

@@ -2,7 +2,7 @@
 #	File:	Makefile.PL
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
 #
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer.
 #			All rights reserved.
 #
 #			This package is free software; you can redistribute it
@@ -10,6 +10,8 @@
 #
 #	Date:	2001/04/18
 #	Use:	Create Makefile for FameHLI::API stuff
+#	Mod:	2005/03/15 daveo: Add test for working FAME (could be invalid
+#			lesstif as in early tests with RHEL4 and Fedora3, for example)
 #=============================================================================
 
 use ExtUtils::MakeMaker;
@@ -88,6 +90,34 @@ MISSING:
 			print("Well, let's get on with it!\n\n");
 		}
 
+;#		------------------------------------------------------------------
+;#		Next, let's test to see if the FAME software will run stand-alone.
+;#		This test was created because of the move of lesstif to use x.org.
+;#		If you don't have the proper lesstif you get an error looking for
+;#		libXm.so.1.  This should only affect "cfmfame" and mcadbs calls.
+;#		------------------------------------------------------------------
+my		$fameini = "./fametest.ini";
+my		$fametxt = "./fametest.txt";
+my		$fametest = 0;
+		if (-f $fameini) {
+			`rm -f $fametxt`;
+			`$ENV{FAME}/fame i $fameini`;
+			$fametest = 1 if (-f $fametxt);
+		} else {
+			die("Can't find ${fameini}.  Bye bye.\n");
+		}
+
+		open(OUT, ">fametest.out") or die("Ouch! $!");
+		if ($fametest) {
+			print(OUT "WORKED\n");
+		} else {
+			print(OUT "FAILED\n");
+		}
+		close(OUT);
+
+;#		------------------------------------------------------------------
+;#		Well, supposedly, we should be ready to go!
+;#		------------------------------------------------------------------
 		WriteMakefile(
     		'NAME'			=>	'FameHLI::API',
     		'VERSION_FROM'	=>	'API.pm',

@@ -1,7 +1,7 @@
 #=============================================================================
 #	File:	02_SetOptions.t
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
 #	Editor:	vi with tabstops=4

@@ -1,7 +1,7 @@
 #=============================================================================
 #	File:	HLI.pm
 #	Author:	Dave Oberholtzer, (daveo@obernet.com)
-#			Copyright (c)2001, David Oberholtzer and Measurisk.
+#			Copyright (c)2005, David Oberholtzer.
 #	Date:	2001/03/23
 #	Use:	HLI #define variables made available to FameHLI::API
 #=============================================================================
@@ -614,7 +614,7 @@ use AutoLoader;
 	HWRITE
 	HYES
 );
-$VERSION = '2.001';
+$VERSION = '2.101';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()
@@ -661,7 +661,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 Dave Oberholtzer (daveo@obernet.com) and Measurisk.
+Copyright (c) 2005 Dave Oberholtzer (daveo@obernet.com).
 All rights reserved. This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.
 

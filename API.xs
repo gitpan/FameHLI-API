@@ -2,10 +2,12 @@
 **	File:	API.xs
 **	Type:	interface library (for Perl and friends)
 **	Author:	David Oberholtzer, (daveo@obernet.com)
-**			Copyright (c)2001, David Oberholtzer and Measurisk.
+**			Copyright (c)2005, David Oberholtzer
 **	Date:	2001/03/23
 **	Rev:	$Id: API.xs,v 1.1 2003/06/18 02:01:57 daveo Exp daveo $
 **	Use:	Access to  FAME functions in other platforms.
+**	Mod:	2005/03/15 daveo: modified the Missing Value functions to
+**			return HBCNTX and don't even try to implement them.
 ******************************************************************************
 **	This library is an abstraction layer for FAME C-HLI functions
 **
@@ -1939,10 +1941,21 @@ int		month;
 
 
 ##===========================================================================
+##		Since we handle missing values as references to strings like "NA",
+##		"NC" and "ND" there is really no reason to have these functions.
+##		At the suggestion of a well positioned Fame employee, we simply
+##		return the "This operation not allowed in current context" value
+##		if you call one of these (HBCNTX).  That way, you get a "valid"
+##		return code.
+##
+##		First, the "Set It" functions
+##
+##===========================================================================
+
+##===========================================================================
 ##		cfmsnm
 ##===========================================================================
-##		In progress
-##===========================================================================
+
 int
 perl_Cfmsnm(t_nctran = FNUMNC, t_ndtran = FNUMND, t_natran = FNUMNA, table)
 double		t_nctran
@@ -1950,55 +1963,15 @@ double		t_ndtran
 double		t_natran
 SV			*table
 
-	PREINIT:
-float		nctran;
-float		ndtran;
-float		natran;
-float		tbl[3];
-int			i;
-AV			*misarray;
-SV			*sv;
-
 	CODE:
-##		----------------------------------------------------------------------
-##		Check to see if we have been given anything valid.  If so, use it.
-##		----------------------------------------------------------------------
-		if (SvROK(table) && (SvTYPE(SvRV(table)) == SVt_PVAV)) {
-			misarray = (AV *)SvRV(table);
-			av_clear(misarray);
-
-##		----------------------------------------------------------------------
-##		It isn't a refrence or an array.  For now, blow away the old thing 
-##		and create a new reference.
-##		----------------------------------------------------------------------
-		} else {
-			misarray = newAV();
-			SvREFCNT_dec(table);
-			table = newRV_inc((SV *)misarray);
-		}
-
-		nctran = t_nctran;
-		ndtran = t_ndtran;
-		natran = t_natran;
-		cfmsnm(&status, nctran, ndtran, natran, tbl);
-
-		if (status == HSUCC) {
-			for (i=0; i<3; i++) {
-				sv = newSVnv(tbl[i]);
-				av_push(misarray, sv);
-			}
-		}
-		RETVAL = status;
+		RETVAL = HBCNTX;
 
 	OUTPUT:
 		RETVAL
-		table
 
 
 ##===========================================================================
 ##		cfmspm
-##===========================================================================
-##		In progress
 ##===========================================================================
 int
 perl_Cfmspm(nctran = FPRCNC, ndtran = FPRCND, natran = FPRCNA, table)
@@ -2007,48 +1980,15 @@ double		ndtran
 double		natran
 SV			*table
 
-	PREINIT:
-double		tbl[3];
-int			i;
-AV			*misarray;
-SV			*sv;
-
 	CODE:
-##		----------------------------------------------------------------------
-##		Check to see if we have been given anything valid.  If so, use it.
-##		----------------------------------------------------------------------
-		if (SvROK(table) && (SvTYPE(SvRV(table)) == SVt_PVAV)) {
-			misarray = (AV *)SvRV(table);
-			av_clear(misarray);
-
-##		----------------------------------------------------------------------
-##		It isn't a refrence or an array.  For now, blow away the old thing 
-##		and create a new reference.
-##		----------------------------------------------------------------------
-		} else {
-			misarray = newAV();
-			SvREFCNT_dec(table);
-			table = newRV_inc((SV *)misarray);
-		}
-
-		cfmspm(&status, nctran, ndtran, natran, tbl);
-		if (status == HSUCC) {
-			for (i=0; i<3; i++) {
-				sv = newSVnv(tbl[i]);
-				av_push(misarray, sv);
-			}
-		}
-		RETVAL = status;
+		RETVAL = HBCNTX;
 
 	OUTPUT:
 		RETVAL
-		table
 
 
 ##===========================================================================
 ##		cfmsbm
-##===========================================================================
-##		In progress
 ##===========================================================================
 int
 perl_Cfmsbm(t_nctran = FBOONC, t_ndtran = FBOOND, t_natran = FBOONA, table)
@@ -2057,118 +1997,110 @@ double		t_ndtran;
 double		t_natran;
 SV			*table
 
-	PREINIT:
-int		nctran;
-int		ndtran;
-int		natran;
-int		tbl[3];
-int		i;
-AV		*misarray;
-SV		*sv;
-
 	CODE:
-##		----------------------------------------------------------------------
-##		Check to see if we have been given anything valid.  If so, use it.
-##		----------------------------------------------------------------------
-		if (SvROK(table) && (SvTYPE(SvRV(table)) == SVt_PVAV)) {
-			misarray = (AV *)SvRV(table);
-			av_clear(misarray);
-
-##		----------------------------------------------------------------------
-##		It isn't a refrence or an array.  For now, blow away the old thing 
-##		and create a new reference.
-##		----------------------------------------------------------------------
-		} else {
-			misarray = newAV();
-			SvREFCNT_dec(table);
-			table = newRV_inc((SV *)misarray);
-		}
-
-		nctran = t_nctran;
-		ndtran = t_ndtran;
-		natran = t_natran;
-
-		cfmsbm(&status, nctran, ndtran, natran, tbl);
-		if (status == HSUCC) {
-			for (i=0; i<3; i++) {
-				sv = newSViv(tbl[i]);
-				av_push(misarray, sv);
-			}
-		}
-		RETVAL = status;
+		RETVAL = HBCNTX;
 
 	OUTPUT:
 		RETVAL
-		table
 
 
 ##===========================================================================
 ##		cfmsdm
 ##===========================================================================
+int
+perl_Cfmsdm(t_nctran = FDATNC, t_ndtran = FDATND, t_natran = FDATNA, table)
+double		t_nctran;
+double		t_ndtran;
+double		t_natran;
+SV			*table
+
+	CODE:
+		RETVAL = HBCNTX;
+
+	OUTPUT:
+		RETVAL
+
+
+##===========================================================================
+##		And then....
+##			The "IS IT?" functions
+##===========================================================================
 
 ##===========================================================================
 ##		cfmisnm
-##===========================================================================
-##		Doesn't quite work passing in ND...
 ##===========================================================================
 int
 perl_Cfmisnm(t_value, sv_ismiss)
 double	t_value
 SV		*sv_ismiss
 
-	PREINIT:
-float	value;
-int		ismiss;
-
 	CODE:
-		value = t_value;
-		printf("value is '%f'\n", value);
-		cfmisnm(&status, value, &ismiss);
-		if (status == HSUCC) {
-			sv_setiv(sv_ismiss, ismiss);
-		}
-		RETVAL = status;
+		RETVAL = HBCNTX;
 
 	OUTPUT:
 		RETVAL
-		sv_ismiss
 
 
+##		sv_ismiss
 ##===========================================================================
 ##		cfmispm
 ##===========================================================================
 int
-perl_Cfmispm(value, sv_ismiss)
-double	value
+perl_Cfmispm(t_value, sv_ismiss)
+double	t_value
 SV		*sv_ismiss
 
-	PREINIT:
-int		ismiss;
-
 	CODE:
-		printf("value is '%f'\n", value);
-		cfmisnm(&status, value, &ismiss);
-		if (status == HSUCC) {
-			sv_setiv(sv_ismiss, ismiss);
-		}
-		RETVAL = status;
+		RETVAL = HBCNTX;
 
 	OUTPUT:
 		RETVAL
-		sv_ismiss
 
 
 ##===========================================================================
 ##		cfmisbm
 ##===========================================================================
+int
+perl_Cfmisbm(t_value, sv_ismiss)
+double	t_value
+SV		*sv_ismiss
+
+	CODE:
+		RETVAL = HBCNTX;
+
+	OUTPUT:
+		RETVAL
+
 
 ##===========================================================================
 ##		cfmisdm
 ##===========================================================================
+int
+perl_Cfmisdm(t_value, sv_ismiss)
+double	t_value
+SV		*sv_ismiss
+
+	CODE:
+		RETVAL = HBCNTX;
+
+	OUTPUT:
+		RETVAL
+
 
 ##===========================================================================
 ##		cfmissm
 ##===========================================================================
+int
+perl_Cfmissm(t_value, sv_ismiss)
+double	t_value
+SV		*sv_ismiss
+
+	CODE:
+		RETVAL = HBCNTX;
+
+	OUTPUT:
+		RETVAL
+
 
 ##***************************************************************************
 ##***************************************************************************
@@ -2259,7 +2191,7 @@ int		tmiss
 double	tbl
 
 	CODE:
-		status = -1;
+		status = HBCNTX;
 ##		cfmrdfa(&status, dbkey, objnam, wntobs, &syear, &sprd, &gotobs, 
 ##				(float *)(data->data), tmiss, (float *)tbl->tbl);
 		RETVAL = status;
@@ -3314,6 +3246,9 @@ double	*dptr;
 ##		This function will take either the "ismiss=HNxVAL" or a reference
 ##		to one of the missing strings (NA/NC/ND) to effect missing values.
 ##===========================================================================
+##		2005/03/20 daveo: removed artificial limit of 255 chars on "sv_val"
+##			as per bug reported by Tarik.  Oops.
+##===========================================================================
 int
 perl_Cfmwstr(dbkey, objnam, range, sv_val, ismiss=0, length=0)
 int		dbkey
@@ -3332,23 +3267,29 @@ SV		**svptr;
 SV		*mis_val;
 int		fclass, ftype, freq, fyear, fprd, lyear, lprd;
 char	*mis;
-char	val[255];
+char	*val;
+char	*pval;
 
 	CODE:
 ##		----------------------------------------------------------------------
 ##		Let's find out if we have a real value or a missing value.
 ##		----------------------------------------------------------------------
+		val = malloc(15);
+		strcpy(val, "Missing Value");
+		length = strlen(val);
+
 		if (SvROK(sv_val)) {
 			mis_val = SvRV(sv_val);
 			if (SvPOK(mis_val)) {
 				mis = SvPV(mis_val, length);
-				strcpy(val, "Missing Value");
-				length = strlen(val);
 				if (strncmp(mis, "NA", 2) == 0) {
+					strcpy(val, "NA");
 					ismiss = HNAVAL;
 				} else if (strncmp(mis, "NC", 2) == 0) {
+					strcpy(val, "NC");
 					ismiss = HNCVAL;
 				} else if (strncmp(mis, "ND", 2) == 0) {
+					strcpy(val, "ND");
 					ismiss = HNDVAL;
 				} else {
 					worked = FALSE;
@@ -3361,7 +3302,10 @@ char	val[255];
 		} else if (ismiss) {
 ##			Let it flow through...  They specified "missing" with 'ismiss'
 		} else if (SvPOK(sv_val)) {
-			strcpy(val, SvPV(sv_val, length));
+			pval = SvPV(sv_val, length);
+			val = malloc(length+1);
+			strncpy(val, pval, length);
+			val[length] = '\0';
 			ismiss = HNMVAL;
 		} else {
 			worked = FALSE;
@@ -3401,7 +3345,11 @@ char	val[255];
 		if (worked) {
 			cfmwstr(&status, dbkey, objnam, rng, val, ismiss, length);
 		}
+
+		free(val);
+fprintf(stderr, "Freeing '%d' bytes.\n", length);
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 
@@ -3582,7 +3530,7 @@ int		miss
 double	tbl
 
 	CODE:
-		status = -1;
+		status = HBCNTX;
 #		cfmwrmt(&status, dbkey, objnam, objtyp, (int *)rng,
 #				(float *)(data->data), miss, (float *)tbl->tbl);
 		RETVAL = status;

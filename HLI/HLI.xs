@@ -1,7 +1,8 @@
 //============================================================================
 //	File:	HLI.xs
 //	Author:	Fame, h2xs and Dave Oberholtzer (daveo@obernet.com)
-//			Copyright (c)2001, FISI, David Oberholtzer and Measurisk.
+//			Copyright (c)2005, Sungard and David Oberholtzer.
+//			The FAME #define variables were used with permission.
 //	Date:	2001/04/18
 //	Use:	Import the FAME #define vars into the FameHLI::API::HLI package.
 //	Usage:	use FameHLI::API::HLI;
