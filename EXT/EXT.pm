@@ -40,7 +40,7 @@ require AutoLoader;
 @EXPORT = qw(
 );
 	
-$VERSION = '1.101';
+$VERSION = '2.001';
 
 bootstrap FameHLI::API::EXT $VERSION;
 

@@ -11,7 +11,16 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..17\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+        print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+        exit;
+    } else {
+		print "1..17\n";
+    }
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;

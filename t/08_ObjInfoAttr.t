@@ -6,19 +6,28 @@
 #	Use:	Testing file for FameHLI functions
 #	Editor:	vi with tabstops=4
 #=============================================================================
-#	NOTE:	This is the only script where I didn't import ':all' of the
+#	NOTE:	This is the only script where I did not import ':all' of the
 #			functions.  this way you can see how to call them in the
 #			fully qualified syntax.  If you are writing a module that
 #			you want to share with others, you should use this syntax.
 #			If you are writing a script that few will see then you can
 #			consider importing everything.
 #=============================================================================
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+# Before 'make install' is performed this script should be runnable with
+# 'make test'. After 'make install' it should work as 'perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..56\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+		print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+		exit;
+	} else {
+		print "1..56\n";
+	}
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -29,7 +38,6 @@ $| = 1;
 use		FameHLI::API;
 use		FameHLI::API::EXT;
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -40,12 +48,9 @@ my		$warn		=	0;
 my		$vars			=	GetVars();
 my		$cbkey;
 my		$dbkey;
-my		$host			=	$vars->{hostname};
-my		$pwd			=	$vars->{password};
 my		$rbkey;
 my		$rc;
 my		$str			=	"";
-my		$user			=	$vars->{username};
 my		$work;
 my		$TestWriteCount	=	31;
 
@@ -261,7 +266,7 @@ my			$inlen = 0;
 				"Attribute is %s", $val);
 
 ;#		------------------------------------------------------------
-;#		Let's see what we have done...
+;#		Let us see what we have done...
 ;#		------------------------------------------------------------
 			ShowResults($log, 1,0,"cfmwhat",
 				FameHLI::API::Cfmwhat($dbkey, $thirdname,
@@ -316,7 +321,7 @@ my			$testvar = "STRLEN_TEST";
 my			$testlen;
 
 			ShowResults($log, 1,0,"cfmnwob(STRLEN)", 
-				FameHLI::API::Cfmnwob($dbkey, $testvar, HSERIE, HCASEX, HSTRNG));
+				FameHLI::API::Cfmnwob($dbkey, $testvar,HSERIE,HCASEX, HSTRNG));
 			ShowResults($log, 1,0,"cfmgsln", 
 				FameHLI::API::Cfmgsln($dbkey, $testvar, $testlen),
 				"Length of '$testvar' is $testlen.");

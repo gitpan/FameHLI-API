@@ -11,7 +11,16 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..28\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+        print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+        exit;
+    } else {
+		print "1..30\n";
+    }
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -37,6 +45,8 @@ my		$str			=	"";
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 my		$strname = "teststr";
+my		$strnam2 = "testnd1str";
+my		$strnam3 = "testnd2str";
 my		$numname = "testnum";
 my		$precname = "testprec";
 my		$datename = "testdate";
@@ -93,10 +103,12 @@ my		@testdata = NumData();
 my		@NAdata = NAData();
 my		@NCdata = NCData();
 my		@NDdata = NDData();
+my		$NDscalar = "ND";
 my		$tdref = \@testdata;
 my		$NAref = \@NAdata;
 my		$NCref = \@NCdata;
 my		$NDref = \@NDdata;
+my		$NDscalref = \$NDscalar;
 my		$ndata;
 
 my		$cnt = $#testdata;
@@ -178,10 +190,21 @@ my		$cnt = $#testdata;
 
 ;#		------------------------------------------------------------
 ;#		Write a string scalar
+;#		Note: you can either write a Missing Value by setting ISMISS
+;#		(as is normal in CHLI) or by using a reference to 'NA', 'NC'
+;#		or 'ND' as is the PerlHLI pseudo-standard.
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmwstr", 
 			Cfmwstr($dbkey, $strname, $rng, $text, 0, length($text)),
 			 $strname);
+
+		ShowResults($log, 1,0,"cfmwstr(ND/ref)", 
+			Cfmwstr($dbkey, $strnam2, $rng, $NDscalref, 0, length($text)),
+			 $strnam2);
+
+		ShowResults($log, 1,0,"cfmwstr(ND/ismiss)", 
+			Cfmwstr($dbkey, $strnam3, $rng, $text, HNDVAL, length($text)),
+			 $strnam3);
 
 ;#		--------------------
 ;#		Name List

@@ -6,12 +6,21 @@
 #	Use:	Testing file for FameHLI functions
 #	Editor:	vi with tabstops=4
 #=============================================================================
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+# Before 'make install' is performed this script should be runnable with
+# 'make test'. After 'make install' it should work as 'perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..18\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+        print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+        exit;
+    } else {
+		print "1..20\n";
+    }
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -33,6 +41,7 @@ my		$vars			=	GetVars();
 my		$datstr			=	$vars->{spindate};
 my		$db				=	$vars->{spindex};
 my		$dbkey;
+my		$work;
 my		$host			=	$vars->{hostname};
 my		$pwd			=	$vars->{password};
 my		$service		=	$vars->{service};
@@ -40,6 +49,7 @@ my		$user			=	$vars->{username};
 
 ;#		------------------------------------------------------------
 ;#		Start things off by opening the log and initialzing Fame.
+;#		You have to call cfmopwk or cfmferr will crash... sigh.
 ;#		------------------------------------------------------------
 my		$log = StartTest("17_Misc");
 		ShowResults($log, 1,0,"cfmini", Cfmini());
@@ -47,15 +57,23 @@ my		$log = StartTest("17_Misc");
 ;#		------------------------------------------------------------
 		printf($log "--> Getting FAME Errors\n");
 ;#		------------------------------------------------------------
-;#		First, let's load up the return codes...
+;#		First, let us load up the return codes...
 ;#		------------------------------------------------------------
-		$r1 = Cfmfame("fred is here");
+		$r1 = Cfmfame("signal error: \"Hi Mom.\"");
+		ShowResults($log, 1,HFAMER,"cfmfame", $r1, "Failed properly");
+
+;#		------------------------------------------------------------
+;#		Now we need to get the error code.  Note that the work
+;#		database needs to be open before we call Cfmferr on Linux
+;#		platform.  This seems to make no difference on Solaris or
+;#		Windows. On those platforms we can skip Cfmopwk. Go figure.
+;#		------------------------------------------------------------
+		ShowResults($log, 1,0,"cfmopwk", Cfmopwk($work));
 		$r3 = Cfmferr($msg);
 
 ;#		------------------------------------------------------------
 ;#		Print out the messages and, whazzup? No error length!
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,HFAMER,"cfmfame", $r1, "Failed properly");
 		ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
 
 ;#		------------------------------------------------------------
@@ -90,7 +108,7 @@ my		$log = StartTest("17_Misc");
 			ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
 
 ;#		------------------------------------------------------------
-;#		Now, let's clean up after ourselves.
+;#		Now, let us clean up after ourselves.
 ;#		------------------------------------------------------------
 			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($wdbkey));
 			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
@@ -138,6 +156,7 @@ my			$range;
 		}
 
 ;#		------------------------------------------------------------
+		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($work));
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }
 

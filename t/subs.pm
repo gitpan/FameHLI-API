@@ -74,6 +74,9 @@ my		$fh = new FileHandle(">${name}.log");
 		$name = substr($name, 0, 20) . " ";
 ;#		printf("%s", $name);
 		printf($fh "File Test: %s\n", $name);
+my		$other = select($fh);
+		$| = 1;
+		select($other);
 		return($fh);
 }
 

@@ -9,13 +9,13 @@
 ;	============================================================
 ;	HOSTNAME=localhost
 ;	SERVICE=mcadbs
-;	USER=
+;	USERNAME=
 ;	PASSWORD=
 ;	SITESERVER=mcaserv@server
 ;
 HOSTNAME=none
 SERVICE=none
-USER=
+USERNAME=
 PASSWORD=
 SITESERVER=none
 ;

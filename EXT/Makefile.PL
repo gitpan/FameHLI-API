@@ -16,7 +16,7 @@ WriteMakefile(
     'VERSION_FROM' => 'EXT.pm',
     'LIBS'	=> ["-L$ENV{HLI} -lchli"],
     'OBJECT' => 'EXT.o',
-    'DEFINE'	=> '',
+    'DEFINE'	=> $ENV{STATICFAME}?'-DCFMINI_EVERYWHERE':'',
     'INC'	=> "-I$ENV{HLI}",
 );
 

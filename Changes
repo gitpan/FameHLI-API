@@ -1,5 +1,35 @@
 Revision history for Perl extension FameHLI.
 
+2.001 Tue feb 8, 2005
+    FameHLI::API
+    Thanks to Ken Kingsbury for finding a buglet in Cfmwhat().  The
+    documentation string was being cut off to the length of the 
+    description string.
+    - Modified Cfmwhat to use the proper length variable.
+
+2.000 xxx Jun x, 2003
+    FameHLI::API
+    Thanks again to Daniel Martin for changes to the Makefile and
+    some of the .xs files to work on Linux (with libchli.a).  Also,
+    he caught a buglet in Cfmgtstr().
+    - Modified several functions to use New() and Safefree()
+      instead of safemalloc() and safefree().
+
+1.200 Mon Aug 5, 2002 (never made it public... oops.)
+    FameHLI::API
+    Thanks to Patrick Chamberlain for bug reports:
+    - Modified Cfmwstr to use references to missing value strings
+      in the 'proper' way.
+
+    FameHLI::API/tests
+    Thanks to Jeremy Yoder for fixes and suggestions:
+    - Modified test suite to use 'USERNAME' and 'PASSWORD' properly
+      for those of you who use authenticated MCADBS servers.
+    - Modified test suite to check for $FAME variable being defined.
+      Since some of us put the license files in $FAME_PATH, I can't
+      check for license files, but there is only so much you CAN
+      do, isn't there?
+
 1.101 Fri May 3, 2002
 
     FameHLI::API

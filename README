@@ -1,8 +1,8 @@
 COPYRIGHT
-    Copyright (c) 2001, 2002 Dave Oberholtzer (daveo@obernet.com) and
-    Measurisk, LLC. All rights reserved. This program is free software; you
-    can redistribute it and/or modify it under the same terms as Perl
-    itself.
+    Copyright (c) 2001, 2002, 2003 Dave Oberholtzer (daveo@fametoys.com) and
+    Measurisk, LLC (www.measurisk.com). All rights reserved. This program is
+    free software; you can redistribute it and/or modify it under the same
+    terms as Perl itself.
 
 DISCLAIMER
     This doc is longer than it should be because in includes elements of
@@ -15,13 +15,33 @@ DISCLAIMER
     address them.
 
     Please read about Missing Values (specifically that translation tables
-    are not yet supported). "Unit of Work" stuff is not tested and in some
-    cases not written (see notes below).
+    are not supported). "Unit of Work" stuff is not tested and in some cases
+    not written (see notes below).
 
     My sense of humor is a bit dry. As this moves up the revision ladder, I
     will try to tone it down a bit.
 
 CHANGES
+    The 2.000 release may not really qualify for a major release jump but
+    there were a number of significant internal enhancements as well as
+    porting the package to Linux. These changes include the Makefile, the
+    test suite and the API.xs code. One reason that I jumped to the new
+    major release is because it is now a x.000 release which suggests that
+    there may be things to watch for. This includes the changing of all
+    calls from safemalloc to New and from safefree to Safefree.
+    Additionally, Linux is a bit more strict about modifying what are
+    supposed to be "read only" variables. Thanks to Daniel Martin who has,
+    once again, helped get this onto a new platform.
+
+    The 1.200 release includes fixes to both the test suite and to the
+    underlying code. First, the USERNAME and PASSWORD had been switched in
+    the PWD file making things difficult for anyone testing authenticated
+    server access. Second, the *FameHLI::API::Cfmwstr* function has been
+    'fixed' to more closely resemble the Perl world. You may now write an
+    "ND" value using a reference as you can with numerics as well as setting
+    the 'ismiss' argument to HNDVAL. Thanks to Jeremy Yoder (USA) and
+    Patrick Chamberlain (UK) of Fame.
+
     The 1.101 release includes a 'bug' fix for "missing" scalar values.
     Instead of returning a reference to "NA", "NC" or "ND", Cfmrrng returned
     the actual internal representation of NA, NC or ND (which looks like a
@@ -61,6 +81,14 @@ DESCRIPTION
     opposed to any objects. Objects, on the other hand, can now be easily
     developed using this library and added to the *FameHLI* namespace.
 
+    This port could be considered a "active" port of the C-HLI. Other ports
+    are very passive in that they leave all checking up to the C-HLI and do
+    not support analogous data structures in function signatures (for
+    instance: the *int* range array). This additional functionality requires
+    additional programming in the port code (ergo, active). The result is a
+    library that behaves like and conforms to the C-HLI and accompanying
+    documentation (with limited noted exceptions).
+
     The 'library' includes:
 
     *   Nearly all of the cfm* functions (exceptions are noted and are
@@ -82,7 +110,7 @@ DESCRIPTION
 
     If you used the *cpan* module and/or need more help finding these files
     you should either talk to your SysAdmin or Local Perl Guru to find out
-    where *cpan* keeps its *build* tree or try to use `find':
+    where *cpan* keeps its *build* tree or try to use "find":
 
       find / -name API.xs > /tmp/API.search
 
@@ -106,15 +134,13 @@ RETURN VALUE
     in the variable.
 
   Scalars
-
     Scalar values are returned in scalar variables. Keep in mind that this
-    refers to things that are returned as scalars in the C-HLI. `cfmrrng'
+    refers to things that are returned as scalars in the C-HLI. "cfmrrng"
     returns an array of one element when the OBJECT being read is a scalar.
     Therefore, Cfmrrng will return an array of one element. (See note on
     'Arrays' below.)
 
   Arrays
-
     Arrays are returned to Perl in scalar references to anonymous arrays. To
     access values in one of these arrays you must use the 'pointer' or
     'dereferencing' notation. For instance, to access the first element of
@@ -133,39 +159,41 @@ RETURN VALUE
 
     You noted, of course, that since Missing Values translation tables
     aren't supported we opted for "No Translation of Missing Values". The
-    `$mistt' can be any scalar as it will be completely ignored. I do not
-    ignore `tmiss' so you will get very unpredictable results if you specify
-    anything other than HNTMIS.
+    $mistt can be any scalar as it will be completely ignored. I do not
+    ignore "tmiss" so you will get very unpredictable results if you specify
+    anything other than HNTMIS. This will be corrected in a later release.
 
 ERRORS
     Perl will let you know about strange errors, either by warnings or by
     dumping core. I haven't gotten a core dump in quite a while so either I
     have found most of the evil bugs or I have gotten more careful of what
-    to avoid. ;-)
+    to avoid. ;-) Please go to www.fametoys.com and mention any problems
+    that you have in this regard in the appropriate forum.
 
 EXAMPLES
     The best source of examples will come from the FAME C-HLI documentation.
-    The main difference is that `status' has been removed from the argument
-    list and is now returned as the value of the function.
+    The main difference is that "status" has been removed from the argument
+    list and is now returned as the value of the function. In addition, you
+    will soon (as of the 2.000 release) be able to find examples at
+    www.fametoys.com.
 
   "C"
-
         int status;
         cfmini(&status);
 
   Perl
-
         my $rc = FameHLI::API::Cfmini();
 
 PREREQUISITES
     FameHLI::API requires
 
     *   Fame (Forcasting and Analytical Modeling Environment) installed on
-        your system. (www.fame.com) (tested with 8.0 and 9.035)
+        your system. (www.fame.com) (tested with 8.0 and 9.0 to 9.0.13)
 
-    *   Perl and a compiler (this port was tested with Perl 5.6.0 and gcc
-        2.95.2) or, alternatively, Microsoft VC++ and ActiveState Perl (this
-        port was tested with VC++ 6.0 and ActiveState Perl 5.6.0).
+    *   Perl and a compiler (this port was tested with Perl 5.6.0 and 5.8.0,
+        and gcc 2.95.2 and 3.2) or, alternatively, Microsoft VC++ and
+        ActiveState Perl (this port was tested with VC++ 6.0 and ActiveState
+        Perl 5.6.0).
 
     *   A working knowledge of Fame and the C-HLI and/or access to the Fame
         C-HLI documentation. If you have Fame, you should have the
@@ -173,13 +201,14 @@ PREREQUISITES
 
 ENVIRONMENT
     You will need to have the various *FAME* environment variables set as
-    noted in the Fame documentation.
+    noted in the Fame documentation. During building you will be told if the
+    variables are not set.
 
 BUILDING THE MODULE
     Building the module is handled in the standard way. There is a pre-test
     which checks for the $FAME and $HLI environment variables and then
-    checks for "hli.h" and "libchli.so" or "chli.lib". Passing that, it
-    continues on in the normal fashion.
+    checks for "hli.h" and "libchli.so", "libchli.a" or "chli.lib". Passing
+    that, it continues on in the normal fashion.
 
     '[n]make test' runs a suite of test scripts (located in the "t/"
     subdirectory). These tests leave associated "*.log" files in the build
@@ -190,8 +219,7 @@ BUILDING THE MODULE
     the parent directory as "PWD" and edit it to contain valid values. Refer
     to the PWD section under FILES below.
 
-  Building in Solaris
-
+  Building in Solaris and Linux
         perl Makefile.PL
 
     or alternatively
@@ -204,7 +232,6 @@ BUILDING THE MODULE
         make test
 
   Building in Windows
-
     First, make sure that your environment is set up properly. This means
     that you need FAME in the path and you need the compiler settings
     available for 'nmake'.
@@ -234,8 +261,9 @@ PORTABILITY
     This module was developed and tested under the following conditions:
 
        - Developed with Perl 5.6.0 on Solaris 2.6
-       - Compiled using 'gcc' version 2.95.2
+       - Compiled using 'gcc' version 2.95.2 and 3.2
        - Tested on Solaris 2.6 using Fame 8.032 and 9.035
+       - Tested on RedHat Linux 8.0 using Perl 5.8.0 and Fame 9.0.13
        - Compiled using 'MS VC++' version 6.0
        - Tested on Windows NT5/2000 using Fame 8.032
 
@@ -245,19 +273,18 @@ FILES
     *FAME_PATH* environment variables.
 
   PWD
-
     The PWD file should contain values which are correct for your system.
     The values needed are:
 
     *   SERVICE - the service port of an MCADBS. This MCADBS will need to
-        have at least one database open. This is used to test `Cfmrmev'
+        have at least one database open. This is used to test "Cfmrmev"
         which will look for FAMESERIES (noted below) in that MCADBS
 
     *   HOSTNAME - The host on which your MCADBS runs.
 
     *   FAMESERIES - the name of a time series object available from the
         just noted MCADBS. The series MUST have some values in it as the
-        `Cfmrmev' will look for the `LASTVALUE' of that series.
+        "Cfmrmev" will look for the "LASTVALUE" of that series.
 
     *   FAMEISSUER - the name of a string scalar object available from the
         same MCADBS. If you were to specify "IBM.CLOSE" for FAMESERIES you
@@ -290,13 +317,11 @@ CAVEATS (Bugs/Features)
     here goes.
 
   Windows and HDMODE
-
     At the time of this writing, HDMODE does not work correctly (or at all)
     on Windows NT. This is a known condition and Fame is working on a fix.
     It should become available after the next NT build for Fame.
 
   Missing Values
-
     Missing values are implemented as references to a string whose value (as
     would be expected) is "NA", "NC" or "ND". Translation tables are not yet
     implemented. Therefore, since references aren't valid in FameLand, you
@@ -305,14 +330,13 @@ CAVEATS (Bugs/Features)
     one.
 
   String Length arguments
-
     In any C-HLI function which returns a string, you are required to
     provide space for that string as well as telling the C-HLI how much
     space you provided. The length arguments are option in FameHLI::API and
-    are, for the most part, ignored even if you do proivde them.
+    are, for the most part, ignored even if you do proivde them. Do not
+    expect any useful values to be returned in the outlen variables either.
 
   Object Name Conversion
-
     In any C-HLI functions which take an OBJNAM as one of the arguments, the
     HLI "trims the name and converts it to uppercase." This is true of some
     other string arguments as well. I don't do that here. I don't see the
@@ -335,30 +359,34 @@ TO DO LIST
     There are a few areas which still need improvement. These improvements
     will be in later releases. (Order will be dependent on demand.)
 
-  ActiveState Perl Package
+  RPM package for Linux
+    After I find out from Fame Legal if it is allowed, I will look into
+    creating an RPM package. The main issue here is that the Linux libchli
+    is static and, therefore, the actual Fame object library will be linked
+    statically into the package. If this turns out to be an issue, maybe
+    people can ask Fame to make a *.so* (dynamically linked) library for
+    Linux.
 
+  ActiveState Perl Package
     I am looking for a volunteer to help package the FameHLI into an
     ActiveState PPM package. This will help those in the Windows world who
     don't have a handy copy of VC++.
 
   Error Checking / Handling
-
     In this early release of FameHLI::API there is not a lot of error
     checking for things that you just shouldn't do. If you happen to pass a
     string where the function expects a number, I don't know what will
     happen.
 
   Diagnostics and Warnings
-
     Additionally, there aren't many useful diagnostics which use standard
     Perl channels. Most of the error messages are printed to STDOUT. So,
     until I can get to this, please don't make any mistakes. ;-)
 
   Missing Values
-
     Missing Values in FameLand can take one of 3 different values and,
-    therefore, don't quite work like an `undef' in PerlLand. Because of
-    this, I am implementing Missing Values in the following manner:
+    therefore, don't quite work like an "undef" in PerlLand. Because of
+    this, I have implemented Missing Values in the following manner:
 
     *   Missing Values are implemented as references to the strings 'NA',
         'NC' and 'ND'. [Done]
@@ -406,21 +434,19 @@ TO DO LIST
 
 RESTRICTIONS
     You will need to already have FAME installed on your system. This module
-    was developed using FAME 8.032 and 9.035
+    was developed using FAME 8.032, 9.035 and 9.0.13.
 
     Just as the C-HLI is not thread-safe, neither is this library since it
     is based entirely on libchli. You have been warned.
 
 SEE ALSO
-    the perl(1) manpage the FameHLI::API::HLI(3) manpage the FameHLI::EXT(3)
-    manpage.
+    perl(1) FameHLI::API::HLI(3) FameHLI::EXT(3).
 
 AUTHOR
-    Dave Oberholtzer (daveo@obernet.com)
+    Dave Oberholtzer (daveo@fametoys.com) www.fametoys.com
 
 HISTORY
   Various Ports
-
     There have been several attempts to port the C-HLI to Perl. They fall
     into two camps: 'Thin and Perlish' and 'Fameish'.
 
@@ -438,7 +464,6 @@ HISTORY
     thing).
 
   This Port
-
     The FameHLI::API module is a direct successor of the FameLayer written
     using SWIG. While SWIG is a powerful and somewhat easier package to use
     to create a set of wrapper functions, I was unable to achieve some of
@@ -450,9 +475,7 @@ HISTORY
     Both FameLayer and FameHLI::API were developed because I wanted to get
     at the FAME 8.0 HDMODE functionality and because I didn't want to be
     tied to any given MCADBS process. The result is a package written
-    entirely in XS. The package has been compiled on Windows with VC++ 6.0
-    and ActiveState Perl v5.6.0. It passes all tests in the test suite and a
-    couple of simple scripts that I wrote to check basic functionality.
+    entirely in XS.
 
 IF YOU MUST KNOW
     For those of you who want an on-line list of functions and their
@@ -463,33 +486,29 @@ IF YOU MUST KNOW
     is mainly limited to the functions dealing with Missing Values and Unit
     of Work stuff.
 
-    The notable exception to this is `Cfmrdfm' which is partly broken in the
+    The notable exception to this is "Cfmrdfm" which is partly broken in the
     underlying HLI itself.
 
     Also note: Any function with an *** (asterisk) in front of it has not
     been ported to Perl. In *C* you need to feed a properly sized buffer for
-    string variables. In Perl we do that for you. In addition, most `inlen'
-    and `outlen' arguments are optional. If you do provide values for these,
-    the values are ignored. These cases are noted with square braces around
-    the argument.
+    string variables. In Perl we do that for you. In addition, most "inlen"
+    and "outlen" arguments are optional. If you do provide values for these,
+    the values are ignored and nothing useful is returned. These cases are
+    noted with square braces around the argument.
 
   01 Using the HLI
-
       Cfmini()
       Cfmver(ver)
       Cfmfin()
 
   02 Setting Options in the HLI
-
       Cfmsopt(optname, optval)
 
   03 Setting Ranges
-
       Cfmsrng(freq, syear, sprd, eyear, eprd, range, numobs)
       Cfmsfis(freq, syear, sprd, eyear, eprd, range, numobs, fmonth, flabel)
 
   04 Handling Connections
-
       Cfmopcn(connkey, service, hostname, username, password)
       Cfmgcid(dbkey, connkey)
      x Cfmcmmt(connkey)
@@ -498,7 +517,6 @@ IF YOU MUST KNOW
      x Cfmasrt(connkey, assert_type, assertion, perspective, grouping, dblist)
 
   05 Handling Databases
-
       Cfmopdb(dbkey, dbname, mode)
       Cfmspos(flag)
       Cfmcldb(key)
@@ -508,7 +526,6 @@ IF YOU MUST KNOW
       Cfmopdc(dbkey, dbname, mode, connkey)
 
   06 Handling Database Information and Attributes
-
       Cfmddes(dbkey, desc)
       Cfmddoc(dbkey, doc)
       Cfmgdba(dbkey, cyear, cmonth, cday, myear, mmonth, mday, desc, doc)
@@ -516,7 +533,6 @@ IF YOU MUST KNOW
      * Cfmglen
 
   07 Handling Data Objects
-
       Cfmnwob(dbkey, objnam, class, freq, type, basis, observ)
       Cfmalob(dbkey, objnam, class, freq, type, basis, observ, 
                 numobs, numchr, growth)
@@ -525,7 +541,6 @@ IF YOU MUST KNOW
       Cfmrnob(dbkey, oldname, newname)
 
   08 Handling Data Object Information and Attributes
-
       Cfmosiz(dbkey, objname, class, type, freq, fyear, fprd, lyear, lprd)
       Cfmgdat(dbkey, objnam, freq, cdate, mdate)
       Cfmwhat(dbkey, objnam, class, type, freq, basis, observ, 
@@ -553,7 +568,6 @@ IF YOU MUST KNOW
       Cfmsaso(dbkey, objnam, assoc)
 
   09 Handling Dates
-
       Cfmfdiv(freq1, freq2, flag)
       Cfmtody(freq, date)
       Cfmpind(freq, count)
@@ -567,7 +581,6 @@ IF YOU MUST KNOW
       Cfmufrq(freq, base, nunits, year, month)
 
   10 Handling Missing Values
-
     These are not implemented in such a way as you would want to use them.
 
      x Cfmsnm(nctran, ndtran, natran, table)
@@ -581,12 +594,10 @@ IF YOU MUST KNOW
      x Cfmissm
 
   11 Wildcarding
-
       Cfminwc(dbkey, wildname)
       Cfmnxwc(dbkey, obj, class, type, freq)
 
   13 Reading Data
-
      * Cfmrdfa
       Cfmgtnl(dbkey, objnam, index, str [, inlen [, outlen]])
       Cfmrrng(dbkey, objnam, range, data, miss, table)
@@ -595,15 +606,13 @@ IF YOU MUST KNOW
      x Cfmrdfm(dbkey, objname, source)
 
   12 Writing Data
-
       Cfmwrng(dbkey, objnam, range, data, miss, table)
-      Cfmwstr(dbkey, objnam, range, val, ismiss, length)
+      Cfmwstr(dbkey, objnam, range, val [, ismiss [, length]])
       Cfmwsts(dbkey, objnam, range, data)
       Cfmwtnl(dbkey, objnam, idx, val)
      x Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
 
   14 Converting Dates
-
       Cfmtdat(freq, date, hour, minute, second, ddate)
       Cfmdatt(freq, date, hour, minute, second, ddate)
       Cfmddat(freq, date, year, month, day)
@@ -618,28 +627,24 @@ IF YOU MUST KNOW
       Cfmdati(freq, date, datestr, image, month, label)
 
   15 Using the FAME/Server
-
       Cfmfame(command)
       Cfmopwk(dbkey)
       Cfmsinp(cmd) 
 
   16 Using an Analytical Channel
-
       Cfmoprc(dbkey, connkey)
      * Cfmopre
       Cfmrmev(dbkey, expr, optns, wdbkey, objnam)
 
   17 Getting FAME Errors
-
       Cfmferr(errtxt)
      * Cfmlerr
 
   Extensions
-
     The extensions all return a character string which represents the
     textual version of what the code indicates. For instance,
-    `FreqDesc(HBUSNS)' will return the string "BUSINESS". `FormatDate' is
-    simply a convenient wrapper for the `cfmdati' function.
+    "FreqDesc(HBUSNS)" will return the string "BUSINESS". "FormatDate" is
+    simply a convenient wrapper for the "cfmdati" function.
 
       FormatDate(date, freq, image, fmonth, flabel)
 

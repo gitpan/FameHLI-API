@@ -6,12 +6,21 @@
 #	Use:	Testing file for FameHLI functions
 #	Editor:	vi with tabstops=4
 #=============================================================================
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+# Before 'make install' is performed this script should be runnable with
+# 'make test'. After 'make install' it should work as 'perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..30\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+        print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+        exit;
+    } else {
+		print "1..33\n";
+    }
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -33,6 +41,12 @@ my		$vars			=	GetVars();
 my		$dbkey;
 my		$rc;
 my		$TestWriteCount	=	31;
+
+;#		------------------------------------------------------------
+;#		------------------------------------------------------------
+my		$strname		=	"teststr";
+my		$strnam2		=	"testnd1str";
+my		$strnam3		=	"testnd2str";
 
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
@@ -98,6 +112,18 @@ my		@datetest = DateData();
 
 		ShowResults($log, 1,0,"cfmfame", 
 			Cfmfame("<freq b; date 1999m1> junk = uniform"));
+
+		ShowResults($log, 1,0,"cfmgtstr(normal)",
+			Cfmgtstr($dbkey, $strname, $rng, $strval),
+			"Compare '%s' with '%s'\n", "Test Value", $strval);
+
+		ShowResults($log, 1,0,"cfmgtstr(ND/ref)",
+			Cfmgtstr($dbkey, $strnam2, $rng, $strval),
+			"Compare '%s' with '%s'\n", "ND", $$strval);
+
+		ShowResults($log, 1,0,"cfmgtstr(ND/ismiss)",
+			Cfmgtstr($dbkey, $strnam3, $rng, $strval),
+			"Compare '%s' with '%s'\n", "ND", $$strval);
 
 		ShowResults($log, 1,0,"cfmrrng(num)", 
 			Cfmrrng($dbkey, $wr_num_test, $rng, $ndata, HNTMIS, $NoMissTbl));

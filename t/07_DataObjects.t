@@ -11,7 +11,16 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..11\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+		print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+		exit;
+	} else {
+		print "1..13\n";
+	}
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -31,14 +39,14 @@ my		$warn		=	0;
 {
 my		$vars			=	GetVars();
 my		$dbkey;
-my		$host			=	$vars->{hostname};
-my		$pwd			=	$vars->{password};
 my		$rbkey;
 my		$rc;
 
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 my		$strname = "teststr";
+my		$strnam2 = "testnd1str";
+my		$strnam3 = "testnd2str";
 my		$numname = "testnum";
 my		$precname = "testprec";
 my		$datename = "testdate";
@@ -68,6 +76,15 @@ my		$image		=	"<YEAR>/<MZ>/<DZ>";
 			Cfmalob($dbkey, $strname, HSCALA, HUNDFX, HSTRNG, HBSUND, HOBUND,
 					0, 0, 0),
 			$strname);
+		ShowResults($log, 1,0,"cfmalob(s)", 
+			Cfmalob($dbkey, $strnam2, HSCALA, HUNDFX, HSTRNG, HBSUND, HOBUND,
+					0, 0, 0),
+			$strnam2);
+		ShowResults($log, 1,0,"cfmalob(s)", 
+			Cfmalob($dbkey, $strnam3, HSCALA, HUNDFX, HSTRNG, HBSUND, HOBUND,
+					0, 0, 0),
+			$strnam3);
+
 		ShowResults($log, 1,0,"cfmcpob", 
 			Cfmcpob($dbkey, $dbkey, $firstname, $secondname),
 			"$firstname -> $secondname");

@@ -11,7 +11,16 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..24\n"; }
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	if (!$ENV{FAME}) {
+		print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+		exit;
+	} else {
+		print "1..24\n";
+	}
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -21,7 +30,6 @@ $| = 1;
 
 use		FameHLI::API ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -36,15 +44,14 @@ my		$conn;
 my		$dbkey;
 my		$dbname			=	$vars->{famedb};
 my		$host			=	$vars->{hostname};
-my		$issuer			=	$vars->{fameissuer};
+my		$scalar			=	$vars->{famestrscalar};
 my		$name			=	"\%junk";
-my		$pwd			=	$vars->{username};
+my		$pwd			=	$vars->{password};
 my		$rc;
 my		$rng;
 my		$service		=	$vars->{service};
 my		$str			=	"Some stuff";
-my		$ticker			=	$vars->{fameseries};
-my		$user			=	$vars->{password};
+my		$user			=	$vars->{username};
 
 ;#		------------------------------------------------------------
 my		$log = StartTest("05_Databases");
@@ -74,14 +81,20 @@ my		$log = StartTest("05_Databases");
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmrsdb", Cfmrsdb($dbkey));
+		print($log "Before($dbkey, $name, rng, $answer)\n");
 		$rc = Cfmgtstr($dbkey, $name, $rng, $answer),
+;#		$rc = HSUCC; # which is not what is expected.
+		print($log "After($rc:$name)\n");
+;# 11 
 		ShowResults($log, 1,0,"cfmgtstr", ($rc == HNOOBJ) ? HSUCC : -1,
 			"'%s' is gone now", $name);
+;# 12
 		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
 
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 		unlink("packdb.db");
+;# 13
 		ShowResults($log, 1,0,"cfmopdb(c)", Cfmopdb($dbkey, "packdb", HCMODE));
 		ShowResults($log, 1,0,"cfmpack", Cfmpack($dbkey));
 		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
@@ -100,9 +113,10 @@ my		$log = StartTest("05_Databases");
 			SkipResults($log, 1,0,"cfmclcn", 0, "PWD file not found");
 
 ;#		------------------------------------------------------------
-;#		Otherwise, let's test what we are given.
+;#		Otherwise, let us test what we are given.
 ;#		------------------------------------------------------------
 		} else {
+;# 18
 			ShowResults($log, 1,0,"cfmopcn", 
 				Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
 			ShowResults($log, 1,0,"cfmopdc",
@@ -110,12 +124,14 @@ my		$log = StartTest("05_Databases");
 			ShowResults($log, 1,0,"cfmgcid", Cfmgcid($dbkey, $conn));
 	
 			ShowResults($log, 1,0,"cfmgtstr",
-				Cfmgtstr($dbkey, $issuer, $rng, $answer),
-				$answer);
+				Cfmgtstr($dbkey, $scalar, $rng, $answer),
+				"%", $answer);
 
+;# 22
 			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
 			ShowResults($log, 1,0,"cfmclcn", Cfmclcn($conn));
 		}
 
+;# 24
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }

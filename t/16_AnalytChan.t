@@ -6,8 +6,8 @@
 #	Use:	Testing file for FameHLI functions
 #	Editor:	vi with tabstops=4
 #=============================================================================
-# Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl test.pl'
+# Before 'make install' is performed this script should be runnable with
+# 'make test'. After 'make install' it should work as 'perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
@@ -15,6 +15,12 @@ my	$vars;
 BEGIN {
 	$| = 1;
 	require("./t/subs.pm");
+
+	if (!$ENV{FAME}) {
+        print "1..0 # Skipped: No FAME Environment Variable defined!\n";
+        exit;
+    }
+
 	$vars = GetVars();
 	if ($vars->{hostname} eq "none") {
 		print "1..0 # Skipped: no PWD file found\n";
@@ -47,9 +53,8 @@ my		$host			=	$vars->{hostname};
 my		$pwd			=	$vars->{password};
 my		$rc;
 my		$service		=	$vars->{service};
-my		$siteserver		=	$vars->{siteserver};
 my		$str			=	"";
-my		$ticker			=	$vars->{fameseries};
+my		$ticker			=	$vars->{famestrscalar};
 my		$user			=	$vars->{username};
 my		$work;
 my		$TestWriteCount	=	31;

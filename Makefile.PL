@@ -19,38 +19,68 @@ use	File::Spec;
 my		$missing = 0;
 
 		print("\nChecking Environment Variables\n\n");
-		$missing += PrintCheck("FAME", $ENV{FAME}, $ENV{FAME});
-		if (!$missing) {
-			$missing += PrintCheck("HLI", $ENV{HLI}, $ENV{HLI});
-			if ($missing) {
+		if (PrintCheck("FAME", $ENV{FAME}, $ENV{FAME})) {
+			if (! PrintCheck("HLI", $ENV{HLI}, $ENV{HLI})) {
 				print("HLI variable not set.  Hunting for hli.h...\n");
 				if ((-d "$ENV{FAME}/hli") && (-f "$ENV{FAME}/hli/hli.h")) {
 					# Perl understands mixed \ and / on NT, but nmake doesn't
 					$ENV{HLI} = File::Spec->catdir($ENV{FAME}, "hli");
+					print("I set '\$HLI' to '\$FAME/hli'...\n");
 					$missing = 0;
 				} elsif (-f "$ENV{FAME}/hli.h") {
 					$ENV{HLI} = $ENV{FAME};
+					print("HLI set to FAME value.\n");
 					$missing = 0;
 				} else {
 					print("Can't find hli.h!"
 						.	"  Please set HLI environment variable.\n");
+					$missing = 1;
+					goto MISSING;
 				}
 			}
+		} else {
+			print("FAME variable not set.\n");
+			$missing = 1;
+			goto MISSING;
 		}
 
-		if (!$missing) {
-			print("\nChecking for required files\n\n");
-			$missing += PrintCheck("hli.h", -f "$ENV{HLI}/hli.h");
+		print("\nChecking for required files\n\n");
+
+;#		Shouldn't happen.  Should be caught earlier...
+		if (! PrintCheck("hli.h", -f "$ENV{HLI}/hli.h")) {
+			$missing = 1;
+			goto MISSING;
+		}
+
 ;#		------------------------------------------------------------------
 ;#		Only one of these next two can work so we check for both and
 ;#		then decrement the result. (Thanks, Daniel)
 ;#		------------------------------------------------------------------
-			$missing += PrintCheck("libchli.so", -f "$ENV{HLI}/libchli.so");
-			$missing += PrintCheck("chli.lib", -f "$ENV{HLI}/chli.lib");
+		if (!$ENV{STATICFAME}) {
+			$missing += 1
+				unless PrintCheck("libchli.so", -f "$ENV{HLI}/libchli.so");
+			$missing += 1
+				unless PrintCheck("chli.lib", -f "$ENV{HLI}/chli.lib");
 			$missing--;
+		} else {
+			$missing = 1;
 		}
 
 		if ($missing) {
+			print("Unable to find dynamically linked library...\n");
+			if (PrintCheck("libchli.a", -f "$ENV{HLI}/libchli.a")) {
+				print("I wonder why they did that...\n");
+				$ENV{STATICFAME} = 1;
+				$missing = 0;
+			} else {
+				print("Nope, couldn't find the static library either\n");
+				goto MISSING;
+			}
+			
+		}
+
+		if ($missing) {
+MISSING:
 			print("\nExiting.\n");
 			print("Please fix the aforementioned problems and rerun.\n\n");
 			die("TTFN\n");
@@ -63,7 +93,7 @@ my		$missing = 0;
     		'VERSION_FROM'	=>	'API.pm',
     		'LIBS'			=>	["-L$ENV{HLI} -lchli"],
     		'OBJECT'		=>	'API.o',
-    		'DEFINE'		=>	'',
+    		'DEFINE'		=>	$ENV{STATICFAME}?'-DCFMINI_EVERYWHERE':'',
     		'INC'			=>	"-I$ENV{HLI}",
 		);
 }
@@ -81,7 +111,7 @@ my		$name	=	shift;
 my		$passed	=	shift;
 my		$print	=	shift;
 
-my		$resp	=	0;
+my		$resp	=	1;
 
 		print("--> ");
 		print(substr($name . " " . "." x 20, 0, 20), " ");
@@ -92,7 +122,7 @@ my		$resp	=	0;
 			print("\n");
 		} else {
 			print("failed.\n");
-			$resp = 1;
+			$resp = 0;
 		}
 		return $resp;
 }

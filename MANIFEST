@@ -36,3 +36,4 @@ EXT/EXT.xs
 EXT/Makefile.PL
 EXT/t/01_Preliminary.t
 EXT/t/subs.pm
+META.yml                                 Module meta-data (added by MakeMaker)

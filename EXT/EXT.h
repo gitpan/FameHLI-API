@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: EXT.h,v 1.2 2002/02/13 16:49:52 datadev Exp $
+**	Rev:	$Id: EXT.h,v 1.1 2003/06/18 02:29:32 daveo Exp daveo $
 **	Use:	Access to  FAME functions in other platforms.
 *****************************************************************************/
 
@@ -55,5 +55,5 @@ char	*newString(char *src);
 char	*FormatDate(int date, int freq, char *image, int fmonth, int flabel);
 
 
-#endif	__FAMEHLI_API_EXT__
+#endif	// __FAMEHLI_API_EXT__
 

@@ -1,6 +1,6 @@
 ;#=============================================================================
 ;#	File:	FameHLI-API.pm
-;#	Author:	Dave Oberholtzer (daveo@obernet.com)
+;#	Author:	Dave Oberholtzer (daveo@fametoys.com)
 ;#			Copyright (c)2001, David Oberholtzer and Measurisk.
 ;#	Date:	2001/03/23
 ;#	Use:	Access to FAME from Perl
@@ -124,7 +124,7 @@ require AutoLoader;
 @EXPORT = qw(
 );
 
-$VERSION = '1.101';
+$VERSION = '2.001';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -139,10 +139,16 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001, 2002 Dave Oberholtzer (daveo@obernet.com)
-and Measurisk, LLC.  All rights reserved.
+Copyright (c) 2001, 2002, 2003 Dave Oberholtzer (daveo@fametoys.com)
+and Measurisk, LLC (www.measurisk.com).  All rights reserved.
 This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
+
+=head1 NAME
+
+This module is alternatively call FameHLI and PerlHLI.  Both names are
+correct and can be used somewhat interchangeably.  PerlHLI is a bit more
+specific since it is the Perl port of the Fame HLI.
 
 =head1 DISCLAIMER
 
@@ -151,17 +157,38 @@ of I<README>, I<INSTALL> and the I<man> page.  In a later release I will
 properly separate them.  Getting it to work well seemed much more important.
 
 This release is considered to be basically stable.  Please report any
-problems that you may find to me at 'daveo@obernet.com' so that I can
+problems that you may find to me at 'daveo@fametoys.com' so that I can
 address them.
 
 Please read about Missing Values (specifically that translation
-tables are not yet supported). "Unit of Work" stuff is not tested
+tables are not supported). "Unit of Work" stuff is not tested
 and in some cases not written (see notes below).
 
 My sense of humor is a bit dry.  As this moves up the revision ladder, I
-will try to tone it down a bit.
+may try to tone it down a bit.
 
 =head1 CHANGES
+
+The 2.000 release may not really qualify for a major release jump
+but there were a number of significant internal enhancements as well
+as porting the package to Linux.  These changes include the Makefile,
+the test suite and the API.xs code.  One reason that I jumped to the
+new major release is because it is now a x.000 release which suggests
+that there may be things to watch for.  This includes the changing
+of all calls from safemalloc to New and from safefree to Safefree.
+Additionally, Linux is a bit more strict about modifying what are 
+supposed to be "read only" variables.  Thanks to Daniel Martin who
+has, once again, helped get this onto a new platform.
+
+The 1.200 release includes fixes to both the test suite and to the 
+underlying code.  First, the USERNAME and
+PASSWORD had been switched in the PWD file making things difficult for
+anyone testing authenticated server access.  Second, the
+I<FameHLI::API::Cfmwstr> function has been 'fixed' to more closely
+resemble the Perl world.  You may now write an "ND" value using a 
+reference as you can with numerics as well as setting the 'ismiss'
+argument to HNDVAL.  Thanks to Jeremy Yoder (USA) and 
+Patrick Chamberlain (UK) of Fame.
 
 The 1.101 release includes a 'bug' fix for "missing" scalar values.  
 Instead of returning a reference to "NA", "NC" or "ND", Cfmrrng 
@@ -207,6 +234,15 @@ Unlike many modules, this one is simply a library of functions
 as opposed to any objects.  Objects, on the other hand, can now
 be easily developed using this library and added to the I<FameHLI>
 namespace.
+
+This port could be considered a "active" port of the C-HLI.
+Other ports are very passive in that they leave all checking
+up to the C-HLI and do not support analogous data structures in 
+function signatures (for instance: the I<int> range array).  This
+additional functionality requires additional programming in the 
+port code (ergo, active).  The result is a library that behaves
+like and conforms to the C-HLI and accompanying documentation (with
+limited noted exceptions).
 
 The 'library' includes:
 
@@ -296,7 +332,7 @@ tables aren't supported we opted for "No Translation of
 Missing Values".  The C<$mistt> can be any scalar as it will
 be completely ignored.  I do not ignore C<tmiss> so you
 will get very unpredictable results if you specify anything
-other than HNTMIS.
+other than HNTMIS.  This will be corrected in a later release.
 
 =head1 ERRORS
 
@@ -304,13 +340,17 @@ Perl will let you know about strange errors, either by
 warnings or by dumping core.  I haven't gotten a core dump
 in quite a while so either I have found most of the evil
 bugs or I have gotten more careful of what to avoid. ;-)
+Please go to www.fametoys.com and mention any problems
+that you have in this regard in the appropriate forum.
 
 =head1 EXAMPLES
 
 The best source of examples will come from the FAME C-HLI 
 documentation.  The main difference is that C<status> has
 been removed from the argument list and is now returned as
-the value of the function.
+the value of the function.  In addition, you will soon (as
+of the 2.000 release) be able to find examples at
+www.fametoys.com.
 
 =head2 "C"
 
@@ -330,11 +370,13 @@ FameHLI::API requires
 =item *
 
 Fame (Forcasting and Analytical Modeling Environment) installed
-on your system.  (www.fame.com)  (tested with 8.0 and 9.035)
+on your system.  (www.fame.com)  (tested with 8.0 and 9.0 to 9.0.13)
 
 =item *
 
-Perl and a compiler (this port was tested with Perl 5.6.0 and gcc 2.95.2)
+Perl and a compiler (this port was tested with 
+Perl 5.6.0 and 5.8.0,
+and gcc 2.95.2 and 3.2)
 or, alternatively, Microsoft VC++ and ActiveState Perl (this port
 was tested with VC++ 6.0 and ActiveState Perl 5.6.0).
 
@@ -349,13 +391,14 @@ the documentation online (or download the PDF from www.fame.com).
 =head1 ENVIRONMENT
 
 You will need to have the various I<FAME> environment variables
-set as noted in the Fame documentation.
+set as noted in the Fame documentation.  During building you will
+be told if the variables are not set.
 
 =head1 BUILDING THE MODULE
 
 Building the module is handled in the standard way.  There is a
 pre-test which checks for the $FAME and $HLI environment variables
-and then checks for "hli.h" and "libchli.so" or "chli.lib".
+and then checks for "hli.h" and "libchli.so", "libchli.a" or "chli.lib".
 Passing that, it continues on in the normal fashion.
 
 '[n]make test' runs a suite of test scripts (located in the "t/" 
@@ -367,7 +410,7 @@ Before running '[n]make test' you should copy the "PWD.sample"
 file to the parent directory as "PWD" and edit it to contain valid
 values.  Refer to the PWD section under FILES below.
 
-=head2 Building in Solaris
+=head2 Building in Solaris and Linux
 
     perl Makefile.PL
 
@@ -411,13 +454,19 @@ program before the module can be used.
 
 =head1 PORTABILITY
 
-This module was developed and tested under the following conditions:
+This module was tested under the following conditions:
 
-   - Developed with Perl 5.6.0 on Solaris 2.6
-   - Compiled using 'gcc' version 2.95.2
-   - Tested on Solaris 2.6 using Fame 8.032 and 9.035
-   - Compiled using 'MS VC++' version 6.0
-   - Tested on Windows NT5/2000 using Fame 8.032
+   - [OS version] / [Perl version] / [Compiler version] / [Fame version]
+   - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 8.0.2
+   - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.5
+   - Solaris 2.6 / Perl 5.6.0 / gcc 2.95.2 / Fame 9.0.7
+   - RedHat 8.0 / Perl 5.8.0 / gcc 3.2 / Fame 9.0.13
+   - NT5/2000 / ActivePerl 5.6.0 / VC++ 6.0 / Fame 8.0.2
+
+It has NOT been succesfully tested on AIX.  If you would like to use
+it on AIX then either see if it works for you or let us know that
+you plan to use it there and we will see what (if anything) needs
+to be tweaked.
 
 =head1 FILES
 
@@ -497,10 +546,9 @@ to buck the trend so here goes.
 
 =head2 Windows and HDMODE
 
-At the time of this writing, HDMODE does not work correctly
-(or at all) on Windows NT.  This is a known condition and
-Fame is working on a fix.  It should become available after 
-the next NT build for Fame.
+HDMODE did not work correctly in Fame versions 8.x
+(or at all) on Windows NT.  This has been fixed in Fame version
+9.0.
 
 =head2 Missing Values
 
@@ -517,7 +565,8 @@ In any C-HLI function which returns a string, you are
 required to provide space for that string as well as telling
 the C-HLI how much space you provided.  The length arguments
 are option in FameHLI::API and are, for the most part, ignored
-even if you do proivde them.
+even if you do proivde them.  Do not expect any useful values
+to be returned in the outlen variables either.
 
 =head2 Object Name Conversion
 
@@ -548,6 +597,15 @@ There are a few areas which still need improvement.
 These improvements will be in later releases.  (Order
 will be dependent on demand.)
 
+=head2 RPM package for Linux
+
+After I find out from Fame Legal if it is allowed, I will look 
+into creating an RPM package.  The main issue here is that the
+Linux libchli is static and, therefore, the actual Fame object
+library will be linked statically into the package.  If this
+turns out to be an issue, maybe people can ask Fame to make
+a I<.so> (dynamically linked) library for Linux.
+
 =head2 ActiveState Perl Package
 
 I am looking for a volunteer to help package the FameHLI into
@@ -572,7 +630,7 @@ don't make any mistakes.  ;-)
 
 Missing Values in FameLand can take one of 3 different values
 and, therefore, don't quite work like an C<undef> in PerlLand.
-Because of this, I am implementing Missing Values in the
+Because of this, I have implemented Missing Values in the
 following manner:
 
 =over 4
@@ -640,7 +698,7 @@ No muss, no fuss, no casting.
 =head1 RESTRICTIONS
 
 You will need to already have FAME installed on your system.
-This module was developed using FAME 8.032 and 9.035
+This module was developed using FAME 8.032, 9.035 and 9.0.13.
 
 Just as the C-HLI is not thread-safe, neither is this library
 since it is based entirely on libchli.  You have been warned.
@@ -651,7 +709,7 @@ L<perl(1)> L<FameHLI::API::HLI(3)> L<FameHLI::EXT(3)>.
 
 =head1 AUTHOR
 
-Dave Oberholtzer (daveo@obernet.com)
+Dave Oberholtzer (daveo@fametoys.com) www.fametoys.com
 
 =head1 HISTORY
 
@@ -689,10 +747,6 @@ Both FameLayer and FameHLI::API were developed because I wanted
 to get at the FAME 8.0 HDMODE functionality and because I
 didn't want to be tied to any given MCADBS process.  The 
 result is a package written entirely in XS.
-The package has been compiled on Windows with VC++ 6.0 and 
-ActiveState Perl v5.6.0.  It passes all tests in the test
-suite and a couple of simple scripts that I wrote to check
-basic functionality.
 
 =head1 IF YOU MUST KNOW
 
@@ -711,7 +765,8 @@ Also note: Any function with an I<*> (asterisk) in front of it has
 not been ported to Perl.  In I<C> you need to feed a properly
 sized buffer for string variables.  In Perl we do that for you.
 In addition, most C<inlen> and C<outlen> arguments are optional.
-If you do provide values for these, the values are ignored.
+If you do provide values for these, the values are ignored
+and nothing useful is returned.
 These cases are noted with square braces around the argument.
 
 =head2 01 Using the HLI
@@ -838,7 +893,7 @@ These are not implemented in such a way as you would want to use them.
 =head2 12 Writing Data
 
   Cfmwrng(dbkey, objnam, range, data, miss, table)
-  Cfmwstr(dbkey, objnam, range, val, ismiss, length)
+  Cfmwstr(dbkey, objnam, range, val [, ismiss [, length]])
   Cfmwsts(dbkey, objnam, range, data)
   Cfmwtnl(dbkey, objnam, idx, val)
  x Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
