@@ -126,7 +126,7 @@ our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our	@EXPORT = qw(
 );
 
-$VERSION = '0.903';
+$VERSION = '1.000';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -149,14 +149,15 @@ This doc is longer than it should be because in includes elements
 of I<README>, I<INSTALL> and the I<man> page.  In a later release I will
 properly separate them.  Getting it to work well seemed much more important.
 
-And above all, remember that THIS IS AN ALPHA RELEASE.  Your input will
-help move it through BETA to STABLE more quickly.
+This release is considered to be basically stable.  Please report any
+problems that you may find to me at 'daveo@obernet.com' so that I can
+address them.
 
 Please read about Missing Values (specifically that translation
 tables are not yet supported). "Unit of Work" stuff is not tested
 and in some cases not written (see notes below).
 
-My sense of humor is a bit dry.  As this moves toward STABLE, I
+My sense of humor is a bit dry.  As this moves up the revision ladder, I
 will try to tone it down a bit.
 
 =head1 NAME
@@ -248,11 +249,17 @@ documentation, I will forego retyping that text.
 
 Many C-HLI functions take pointers so as to return values via
 the argument list.  These values are returned to Perl via the
-argument list as well.
+argument list as well.  You should not pass a reference to the
+variable in the argument list; FameHLI (by way of XS) understands
+to change the value contained in the variable.
 
 =head2 Scalars
 
-Scalar values are returned in scalar variables.
+Scalar values are returned in scalar variables.  Keep in mind
+that this refers to things that are returned as scalars in
+the C-HLI.  C<cfmrrng> returns an array of one element when
+the OBJECT being read is a scalar.  Therefore, Cfmrrng will
+return an array of one element.  (See note on 'Arrays' below.)
 
 =head2 Arrays
 
@@ -267,7 +274,9 @@ access the first element of an array reference you would use:
 	if ($rc == HSUCC) {
         $val = $valary->[0];
     } else {
-        carp("Couldn't find $objname!");
+my		$msg = "Error accessing $objname! "
+			. FameHLI::API::EXT::ErrDesc($rc);
+		carp($msg);
     }
 
 You noted, of course, that since Missing Values translation
@@ -298,7 +307,7 @@ the value of the function.
 
 =head2 Perl
 
-    $rc = FameHLI::API::Cfmini();
+    my $rc = FameHLI::API::Cfmini();
 
 =head1 PREREQUISITES
 
@@ -308,12 +317,12 @@ FameHLI::API requires
 
 =item *
 
-Fame (Forcasting, Analytical, Modeling Environment) installed
-on your system.  (www.fame.com)  (tested with 8.0 and 9.0 beta)
+Fame (Forcasting and Analytical Modeling Environment) installed
+on your system.  (www.fame.com)  (tested with 8.0 and 9.035)
 
 =item *
 
-Perl and a compiler (tested with Perl 5.6.0 and gcc 2.95.2)
+Perl and a compiler (this port was tested with Perl 5.6.0 and gcc 2.95.2)
 
 =item *
 
@@ -373,7 +382,7 @@ This module was developed and tested under the following conditions:
 
    - Developed with Perl 5.6.0 on Solaris 2.6
    - Compiled using 'gcc' version 2.95.2
-   - Tested on Solaris 2.6 using Fame 8.032 and 9.0(beta)
+   - Tested on Solaris 2.6 using Fame 8.032 and 9.035
 
 =head1 FILES
 
@@ -492,10 +501,10 @@ have an UPPER CASE objnam so that they can look it up in
 the internal database namespace.
 
 I currently copy the objnam to a static buffer and pass that
-buffer to HLI to play with.  If I want to return the converted
-string back, I will need to free up your old variable, malloc
-some new space, assign that to your variable and play some
-calling-stack games.
+buffer to HLI to play with.  To return the converted
+string back to the caller, I will need to free up your old 
+variable, malloc some new space, assign that to your variable 
+and play some calling-stack games.
 
 If anyone can give me a valid reason to do this, I will put
 it in.  Otherwise, I take the object name as READ ONLY.
@@ -582,7 +591,7 @@ No muss, no fuss, no casting.
 =head1 RESTRICTIONS
 
 You will need to already have FAME installed on your system.
-This module was developed using FAME 8.032 and 8.213(beta).
+This module was developed using FAME 8.032 and 9.035
 
 Just as the C-HLI is not thread-safe, neither is this library
 since it is based entirely on libchli.  You have been warned.
@@ -596,6 +605,27 @@ L<perl(1)> L<FameHLI::API::HLI(3)> L<FameHLI::EXT(3)>.
 Dave Oberholtzer (daveo@obernet.com)
 
 =head1 HISTORY
+
+=head2 Various Ports
+
+There have been several attempts to port the C-HLI to Perl.
+They fall into two camps: 'Thin and Perlish' and 'Fameish'.
+
+The 'Thin and Perlish' ports are good if you have never used
+the C-HLI before and don't mind figuring out how the FAME 
+documentation matches up to the reformatted calling sequence
+of these ports.  The more useful portion of these ports comes
+in using the accompanying Perl objects.  These objects are
+complete departures from the FAME docs.  The fact that you
+are reading this suggests to me that you are probably very
+comfortable (or at least familiar) with 'departing from the
+docs' anyway so that shouldn't be a problem.
+
+This 'Fameish' port is designed specifically to match the
+FAME documentation as closely as possible (well, except for
+the 'status' thing).
+
+=head2 This Port
 
 The FameHLI::API module is a direct successor of the FameLayer
 written using SWIG.  While SWIG is a powerful and somewhat

@@ -61,30 +61,40 @@ my		$log = StartTest("17_Misc");
 ;#		------------------------------------------------------------
 ;#		Now, open some stuff so we can use remeval...
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,HSUCC,"cfmopcn", 
-			Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
-		ShowResults($log, 1,HSUCC,"cfmoprc", 
-			Cfmoprc($dbkey, $conn), $dbkey);
-		ShowResults($log, 1,HSUCC,"cfmopdb", 
-			Cfmopdb($wdbkey, "testdb", HUMODE));
+		if ($host eq "none") {
+			SkipResults($log, 1,0, "cfmopcn", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmoprc", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmopdb", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmrmev", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmferr", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmcldb", 0, "PWD file not found");
+			SkipResults($log, 1,0, "cfmcldb", 0, "PWD file not found");
+		} else {
+			ShowResults($log, 1,HSUCC,"cfmopcn", 
+				Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
+			ShowResults($log, 1,HSUCC,"cfmoprc", 
+				Cfmoprc($dbkey, $conn), $dbkey);
+			ShowResults($log, 1,HSUCC,"cfmopdb", 
+				Cfmopdb($wdbkey, "testdb", HUMODE));
 
 ;#		------------------------------------------------------------
 ;#		Load up a new batch of return codes...
 ;#		------------------------------------------------------------
-		$r1 = Cfmrmev($dbkey, "fred is here", "", $wdbkey, "fred");
-		$r3 = Cfmferr($msg);
+			$r1 = Cfmrmev($dbkey, "fred is here", "", $wdbkey, "fred");
+			$r3 = Cfmferr($msg);
 
 ;#		------------------------------------------------------------
 ;#		Print out the messages and voila! we have an error length!
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,HFAMER,"cfmrmev", $r1, "Failed properly");
-		ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
+			ShowResults($log, 1,HFAMER,"cfmrmev", $r1, "Failed properly");
+			ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
 
 ;#		------------------------------------------------------------
 ;#		Now, let's clean up after ourselves.
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($wdbkey));
-		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
+			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($wdbkey));
+			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
+		}
 
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
@@ -92,7 +102,7 @@ my		$date;
 
 		print($log "DB:'$db'\nDate:$datstr\n");
 
-		if ($db) {
+		if ($db ne "none") {
 			ShowResults($log, 1,HSUCC,"Cfmopdb",
 				Cfmopdb($dbkey, $db, HRMODE));
 
@@ -122,8 +132,7 @@ my			$range;
 		} else {
 			print($log "Start -- Skipping SPINDEX test\n");
 			for (my $i=0; $i<6; $i++) {
-				printf("ok %d\n", ++$test::num);
-				printf($log "skipped %d\n", $test::num);
+				SkipResults($log, 1,0,"spindex", 0, "No SPINDEX db");
 			}
 			print($log "End ---- Skipping SPINDEX test\n");
 		}

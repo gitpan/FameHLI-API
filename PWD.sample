@@ -1,10 +1,46 @@
-SERVICE=mcadbs
-HOSTNAME=localhost
-FAMESERIES=ibm.close
-FAMEISSUER=ibm.issuer
-FAMEDB=prc
-USERNAME=
+;	============================================================
+;	File:	PWD
+;	Author:	daveo@obernet.com
+;	Date:	Mar 2001
+;	Use:	Test defaults for FameHLI
+;	============================================================
+;	Use this file as an example to create your own PWD file in
+;	this directory or up to 2 levels up from here.
+;	============================================================
+;	HOSTNAME=localhost
+;	SERVICE=mcadbs
+;	USER=
+;	PASSWORD=
+;	SITESERVER=mcaserv@sun02
+;
+HOSTNAME=none
+SERVICE=none
+USER=
 PASSWORD=
-SITESERVER=mcaserv@localhost
-SPINDEX=frdb_m@localhost \$PRC_TARGET/spindex010320.db
-SPINDATE=20010320
+SITESERVER=none
+;
+;	============================================================
+;	FAMEDB is a database where the two ensuing objects can
+;			be found
+;	FAMESERIES is a time series
+;	FAMEISSUER is a string scalar
+;	============================================================
+;	FAMEDB=prc
+;	FAMESERIES=ibm.close
+;	FAMEISSUER=ibm.issuer
+;
+FAMEDB=none
+FAMESERIES=none
+FAMEISSUER=none
+;
+;	============================================================
+;	The SPINDEX and SPINDATE values are optional.  If null, the
+;	extra test in 17_Misc will not be run and will simply pass.
+;	Please note that SPINDATE must be BUSINESS freq and the
+;	spindex file must exist. (Oh, really?...)
+;	============================================================
+;	SPINDEX=frdb_m@sun02 \$PRC_TARGET/spindex010320.db
+;	SPINDATE=20010320
+;
+SPINDEX=none
+SPINDATE=none

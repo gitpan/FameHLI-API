@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..23\n"; }
+BEGIN { $| = 1; print "1..24\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -86,20 +86,36 @@ my		$log = StartTest("05_Databases");
 		ShowResults($log, 1,0,"cfmpack", Cfmpack($dbkey));
 		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
 		ShowResults($log, 1,0,"cfmopdb(r)", Cfmopdb($dbkey, "packdb", HRMODE));
-
-;#		------------------------------------------------------------
-;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmopcn", 
-			Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
-		ShowResults($log, 1,0,"cfmopdc",
-			Cfmopdc($dbkey, $dbname, HRMODE, $conn));
-		ShowResults($log, 1,0,"cfmgcid", Cfmgcid($dbkey, $conn));
-
-		ShowResults($log, 1,0,"cfmgtstr",
-			Cfmgtstr($dbkey, $issuer, $rng, $answer),
-			$answer);
-
 		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
-		ShowResults($log, 1,0,"cfmclcn", Cfmclcn($conn));
+
+;#		------------------------------------------------------------
+;#		If there is no service then we cannot open the channel
+;#		------------------------------------------------------------
+		if ($service eq "none") {
+			SkipResults($log, 1,0,"cfmopcn", 0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmopdc", 0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmgcid", 0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmgtstr",0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmcldb", 0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmclcn", 0, "PWD file not found");
+
+;#		------------------------------------------------------------
+;#		Otherwise, let's test what we are given.
+;#		------------------------------------------------------------
+		} else {
+			ShowResults($log, 1,0,"cfmopcn", 
+				Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
+			ShowResults($log, 1,0,"cfmopdc",
+				Cfmopdc($dbkey, $dbname, HRMODE, $conn));
+			ShowResults($log, 1,0,"cfmgcid", Cfmgcid($dbkey, $conn));
+	
+			ShowResults($log, 1,0,"cfmgtstr",
+				Cfmgtstr($dbkey, $issuer, $rng, $answer),
+				$answer);
+
+			ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
+			ShowResults($log, 1,0,"cfmclcn", Cfmclcn($conn));
+		}
+
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }

@@ -11,7 +11,18 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..10\n"; }
+my	$vars;
+BEGIN {
+	$| = 1;
+	require("./t/subs.pm");
+	$vars = GetVars();
+	if ($vars->{hostname} eq "none") {
+		print "1..0 # Skipped: no PWD file found\n";
+		exit;
+	} else {
+		print "1..10\n";
+	}
+}
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -22,7 +33,6 @@ $| = 1;
 use		FameHLI::API ':all';
 use		FameHLI::API::EXT ':all';
 use		FameHLI::API::HLI ':all';
-require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -30,7 +40,6 @@ my		$err		=	0;
 my		$warn		=	0;
 
 {
-my		$vars			=	GetVars();
 my		$conn;
 my		$cbkey;
 my		$dbkey;

@@ -53,11 +53,16 @@ my		$fh = new FileHandle(">${name}.log");
 sub		GetVars {
 my		$vars;
 
-		$vars->{hostname}	=	"localhost";
-		$vars->{service}	=	"mcadbs";
+		$vars->{hostname}	=	"none";
+		$vars->{service}	=	"none";
 		$vars->{username}	=	"";
 		$vars->{password}	=	"";
-		$vars->{siteserver}	=	"mcaserv\@localhost";
+		$vars->{siteserver}	=	"none";
+		$vars->{famedb}		=	"none";
+		$vars->{fameseries}	=	"none";
+		$vars->{fameissuer}	=	"none";
+		$vars->{spindex}	=	"none";
+		$vars->{spindate}	=	"none";
 
 		@dirs = ('./.', './..', './../..', './../../..');
 		foreach (@dirs) {
@@ -86,6 +91,7 @@ my					($l,$r) = split(/=/);
 		}
 		return($vars);
 }
+
 
 ;#=============================================================================
 ;#		ShowResults
@@ -146,6 +152,51 @@ my		$i;
 		}
 		print("ok $test::num\n");
 		print($log "ok $test::num\n");
+}
+
+
+;#=============================================================================
+;#		SkipResults
+;#=============================================================================
+sub		SkipResults {
+my		$log		=	shift;
+my		$level		=	shift;
+my		$expect		=	shift;
+my		$name		=	shift;
+my		$rc			=	shift;
+my		@printargs	=	@_;
+my		$i;
+
+		$name .= " .......................";
+		$name = substr($name, 0, 20) . " ";
+		++$test::num;
+		printf($log "%3d) %s", $test::num, $name);
+
+		print($log "ok # Skip ");
+		print("ok $test::num # Skip ");
+
+		if (@printargs) {
+			for ($i=0; $i<=$#printargs; $i++) {
+				if (!defined($printargs[$i])) {
+					$printargs[$i] = "<UNDEF>";
+				} elsif ($printargs[$i] eq "0") {
+;#					nada...
+				} elsif ($printargs[$i]) {
+;#					nada...
+				} else {
+					$printargs[$i] = "<NULL>";
+				}
+			}
+			print($log " (");
+			printf($log @printargs);
+			print($log ")");
+
+			printf(@printargs);
+		}
+		print($log "\n");
+		print("\n");
+
+		print($log "Skipped $test::num\n");
 }
 
 1;

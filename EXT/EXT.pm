@@ -39,7 +39,7 @@ our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our	@EXPORT = qw(
 );
 	
-$VERSION = '0.903';
+$VERSION = '1.000';
 
 bootstrap FameHLI::API::EXT $VERSION;
 

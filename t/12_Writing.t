@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..20\n"; }
+BEGIN { $| = 1; print "1..22\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -43,6 +43,7 @@ my		$datename = "testdate";
 my		$boolname = "testbool";
 
 my		$wr_num_test	=	"wr_num_test";
+my		$wr_nms_test	=	"wr_nms_test";
 my		$wr_nml_test	=	"wr_nml_test";
 my		$wr_boo_test	=	"wr_boo_test";
 my		$wr_str_test	=	"wr_str_test";
@@ -137,6 +138,19 @@ my		$cnt = $#testdata;
 
 ;#		------------------------------------------------------------
 		printf($log "--> Writing Scalar Data\n");
+;#		------------------------------------------------------------
+
+;#		------------------------------------------------------------
+;#		Write a numeric scalar
+;#		------------------------------------------------------------
+		ShowResults($log, 1,0,"cfmnwob(nms)", 
+			Cfmnwob($dbkey, $wr_nms_test, HSCALA, 0, HNUMRC),
+			$wr_nms_test);
+		ShowResults($log, 1,0,"cfmwrng", 
+			Cfmwrng($dbkey, $wr_nms_test, $rng, $tdref, 0, $NoMissTbl));
+
+;#		------------------------------------------------------------
+;#		Write a string scalar
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmwstr", 
 			Cfmwstr($dbkey, $strname, $rng, $text, 0, length($text)),

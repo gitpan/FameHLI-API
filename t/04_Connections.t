@@ -49,12 +49,18 @@ my		$log = StartTest("04_Connections");
 ;#		------------------------------------------------------------
 my		$user = "";
 my		$pwd = "";
-		ShowResults($log, 1,0,"cfmopcn", 
-			Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
-		ShowResults($log, 0,0,"cfmgcid", 999);	# checked in Analytical Channel
-		ShowResults($log, 0,0,"cfmcmmt", 999);
-		ShowResults($log, 0,0,"cfmabrt", 999);
-		ShowResults($log, 1,0,"cfmclcn", Cfmclcn($conn));
+		print($log "service is '$service'\n");
+		if ($service eq "none") {
+			SkipResults($log, 1,0,"cfmopcn", 0, "PWD file not found");
+			SkipResults($log, 1,0,"cfmclcn", 0, "PWD file not found");
+		} else {
+			ShowResults($log, 1,0,"cfmopcn", 
+				Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
+			ShowResults($log, 0,0,"cfmgcid", 999);#checked in Analytical Channel
+			ShowResults($log, 0,0,"cfmcmmt", 999);
+			ShowResults($log, 0,0,"cfmabrt", 999);
+			ShowResults($log, 1,0,"cfmclcn", Cfmclcn($conn));
+		}
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }

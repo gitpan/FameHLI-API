@@ -1,5 +1,48 @@
 Revision history for Perl extension FameHLI.
 
+1.000 Sometime...
+
+    FameHLI::API
+    - Some of the noted fixes here may have happened in an earlier
+      release but were not mentioned below so I mention them here.
+
+    - Fixed a 'hard to get' SEGV problem in Cfmnxwc by converting
+      from using the NO_INIT option for argument variables and
+      making anything that gets returned into an SV*.
+    - May have prevented lots of other SEGV problems because I just
+      went ahead and did the same for all functions.
+    - Fixed an odd bug in Cfm xxxx (rlen) where it would behave
+      oddly if you gave it a predefined array of data. (2358/2339)
+
+    - Changed handling of FREQ such that anything that isn't one of
+      the 6 non-date frequencies is 'defaulted' to a DATE freq.
+      After all, what else is there?  (And error handling will find
+      out if it is an invalid freq anyway.)
+    - Changed the default handling of Missing Values so that
+      any occurrance of a missing value is turned into a reference
+      to a string "NA", "NC" or "ND".
+
+    - Removed Cfmglen() function.  It is unnecessary.
+    - Removed Cfmdlen() function.  It is unnecessary.
+    - Defaulted Cfmgtatt() function length arguments inlen and
+      outlen.  They are unnecessary.
+    - Removed Cfmlatt() function.  It is unnecessary.
+    - Defaulted Cfmgtali() function length arguments inlen and
+      outlen.  They are unnecessary.
+    - Removed Cfmlali() function.  It is unnecessary.
+    - Removed Cfmnlen() function.  It is unnecessary.
+    - Defaulted Cfmgtnl() function length arguments inlen and
+      outlen.  They are unnecessary.
+    - Defaulted Cfmgtsts() function length arguments inlen and
+      outlen.  They are unnecessary.
+
+    FameHLI::API/tests
+    - Commented the PWD.sample file
+    - Changed the defaults in t/subs.pm to "none".
+    - Changed all test files which access values in the PWD file
+      so that they will "Skip" functions which need those values
+      if they are set to "none".
+
 0.903 Mon Apr 23, 2001
 
     FameHLI::API

@@ -1627,17 +1627,24 @@ char	*assoc
 #/===========================================================================
 #/===========================================================================
 int
-perl_Cfmfdiv(freq1, freq2, flag)
+perl_Cfmfdiv(freq1, freq2, sv_flag)
 int		freq1
 int		freq2
-int		flag		=	NO_INIT
+SV		*sv_flag
+
+	PREINIT:
+int		flag;
 
 	CODE:
 		cfmfdiv(&status, freq1, freq2, &flag);
+		if (status == HSUCC) {
+			sv_setiv(sv_flag, flag);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		flag
+		sv_flag
 
 
 #/===========================================================================
@@ -1646,16 +1653,23 @@ int		flag		=	NO_INIT
 #*		Tested 2001/02/14
 #/===========================================================================
 int
-perl_Cfmtody(freq, date)
-int freq
-int date		=	NO_INIT
+perl_Cfmtody(freq, sv_date)
+int		freq
+SV		*sv_date
+
+	PREINIT:
+int		date;
 
 	CODE:
 		cfmtody(&status, freq, &date);
+		if (status == HSUCC) {
+			sv_setiv(sv_date, date);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
@@ -1664,16 +1678,23 @@ int date		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmpind(freq, count)
-int freq
-int count		=	NO_INIT
+perl_Cfmpind(freq, sv_count)
+int		freq
+SV		*sv_count
+
+	PREINIT:
+int		count;
 
 	CODE:
 		cfmpind(&status, freq, &count);
+		if (status == HSUCC) {
+			sv_setiv(sv_count, count);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		count
+		sv_count
 
 
 #/===========================================================================
@@ -1682,18 +1703,25 @@ int count		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmpinm(freq, year, month, count)
-int freq
-int year
-int month
-int count		=	NO_INIT
+perl_Cfmpinm(freq, year, month, sv_count)
+int		freq
+int		year
+int		month
+SV		*sv_count
+
+	PREINIT:
+int		count;
 
 	CODE:
 		cfmpinm(&status, freq, year, month, &count);
+		if (status == HSUCC) {
+			sv_setiv(sv_count, count);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		count
+		sv_count
 
 
 #/===========================================================================
@@ -1702,17 +1730,23 @@ int count		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmpiny(freq, year, count)
-int freq
-int year
-int count		=	NO_INIT
+perl_Cfmpiny(freq, year, sv_count)
+int		freq
+int		year
+SV		*sv_count
+
+	PREINIT:
+int		count;
 
 	CODE:
 		cfmpiny(&status, freq, year, &count);
+		if (status == HSUCC) {
+			sv_setiv(sv_count, count);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		count
+		sv_count
 
 
 #/===========================================================================
@@ -1721,17 +1755,24 @@ int count		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmwkdy(freq, date, wkdy)
+perl_Cfmwkdy(freq, date, sv_wkdy)
 int freq
 int date
-int wkdy		=	NO_INIT
+SV		*sv_wkdy
+
+	PREINIT:
+int		wkdy;
 
 	CODE:
 		cfmwkdy(&status, freq, date, &wkdy);
+		if (status == HSUCC) {
+			sv_setiv(sv_wkdy, wkdy);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		wkdy
+		sv_wkdy
 
 
 #/===========================================================================
@@ -1740,17 +1781,23 @@ int wkdy		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmbwdy(freq, date, biwkdy)
-int freq
-int date
-int biwkdy		=	NO_INIT
+perl_Cfmbwdy(freq, date, sv_biwkdy)
+int		freq
+int		date
+SV		*sv_biwkdy
+
+	PREINIT:
+int		biwkdy;
 
 	CODE:
 		cfmbwdy(&status, freq, date, &biwkdy);
+		if (status == HSUCC) {
+			sv_setiv(sv_biwkdy, biwkdy);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		biwkdy
+		sv_biwkdy
 
 
 #/===========================================================================
@@ -1759,36 +1806,50 @@ int biwkdy		=	NO_INIT
 #/		Tested:	2001/04/18
 #/===========================================================================
 int
-perl_Cfmislp(year, leap)
-int year
-int leap		=	NO_INIT
+perl_Cfmislp(year, sv_leap)
+int		year
+SV		*sv_leap
+
+	PREINIT:
+int		leap;
 
 	CODE:
 		cfmislp(&status, year, &leap);
+		if (status == HSUCC) {
+			sv_setiv(sv_leap, leap);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		leap
+		sv_leap
 
 
 #/===========================================================================
 #/		cfmchfr		C h a n g e   F r e q   o f   D a t e
 #/===========================================================================
 int
-perl_Cfmchfr(sfreq, sdate, select, tfreq, tdate, relate)
-int sfreq
-int sdate
-int select
-int tfreq
-int tdate		=	NO_INIT
-int relate
+perl_Cfmchfr(sfreq, sdate, select, tfreq, sv_tdate, relate)
+int		sfreq
+int		sdate
+int		select
+int		tfreq
+SV		*sv_tdate
+int		relate
+
+	PREINIT:
+int		tdate;
 
 	CODE:
 		cfmchfr(&status, sfreq, sdate, select, tfreq, &tdate, relate);
+		if (status == HSUCC) {
+			sv_setiv(sv_tdate, tdate);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		tdate
+		sv_tdate
 
 
 #/===========================================================================
@@ -1797,19 +1858,25 @@ int relate
 #*		Tested 2001/02/14
 #/===========================================================================
 int
-perl_Cfmpfrq(freq, base, nunits, year, month)
-int freq		=	NO_INIT
-int base
-int nunits
-int year
-int month
+perl_Cfmpfrq(sv_freq, base, nunits, year, month)
+SV		*sv_freq
+int		base
+int		nunits
+int		year
+int		month
+
+	PREINIT:
+int		freq;
 
 	CODE:
 		cfmpfrq(&status, &freq, base, nunits, year, month);
+		if (status == HSUCC) {
+			sv_setiv(sv_freq, freq);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		freq
+		sv_freq
 
 
 #/===========================================================================
@@ -1818,22 +1885,35 @@ int month
 #*		Tested 2001/02/14
 #/===========================================================================
 int
-perl_Cfmufrq(freq, base, nunits, year, month)
-int freq
-int base		=	NO_INIT
-int nunits		=	NO_INIT
-int year		=	NO_INIT
-int month		=	NO_INIT
+perl_Cfmufrq(freq, sv_base, sv_nunits, sv_year, sv_month)
+int		freq
+SV		*sv_base
+SV		*sv_nunits
+SV		*sv_year
+SV		*sv_month
+
+	PREINIT:
+int		base;
+int		nunits;
+int		year;
+int		month;
 
 	CODE:
 		cfmufrq(&status, freq, &base, &nunits, &year, &month);
+		if (status == HSUCC) {
+			sv_setiv(sv_base, base);
+			sv_setiv(sv_nunits, nunits);
+			sv_setiv(sv_year, year);
+			sv_setiv(sv_month, month);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		base
-		nunits
-		year
-		month
+		sv_base
+		sv_nunits
+		sv_year
+		sv_month
 
 
 #/***************************************************************************
@@ -2017,40 +2097,50 @@ SV		*sv;
 #/		Doesn't quite work passing in ND...
 #/===========================================================================
 int
-perl_Cfmisnm(t_value, ismiss)
+perl_Cfmisnm(t_value, sv_ismiss)
 double	t_value
-int		ismiss		=	NO_INIT
+SV		*sv_ismiss
 
 	PREINIT:
 float	value;
+int		ismiss;
 
 	CODE:
 		value = t_value;
 		printf("value is '%f'\n", value);
 		cfmisnm(&status, value, &ismiss);
+		if (status == HSUCC) {
+			sv_setiv(sv_ismiss, ismiss);
+		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		ismiss
+		sv_ismiss
 
 
 #/===========================================================================
 #/		cfmispm
 #/===========================================================================
 int
-perl_Cfmispm(value, ismiss)
+perl_Cfmispm(value, sv_ismiss)
 double	value
-int		ismiss		=	NO_INIT
+SV		*sv_ismiss
+
+	PREINIT:
+int		ismiss;
 
 	CODE:
 		printf("value is '%f'\n", value);
 		cfmisnm(&status, value, &ismiss);
+		if (status == HSUCC) {
+			sv_setiv(sv_ismiss, ismiss);
+		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		ismiss
+		sv_ismiss
 
 
 #/===========================================================================
@@ -2096,34 +2186,38 @@ char *wildname
 #/		Tested	2001/03/16
 #/===========================================================================
 int
-perl_Cfmnxwc(dbkey, obj, class, type, freq)
+perl_Cfmnxwc(dbkey, sv_str, sv_class, sv_type, sv_freq)
 int		dbkey
-char	*obj	=	NO_INIT
-int		class	=	NO_INIT
-int		type	=	NO_INIT
-int		freq	=	NO_INIT
+SV 		*sv_str
+SV		*sv_class
+SV		*sv_type
+SV		*sv_freq
 
 	PREINIT:
 char	buffer[SMALLBUF];
 static	int	xx = 0;
 char	*thing;
 int		len;
+int		class;
+int		type;
+int		freq;
 
 	CODE:
 		cfmnxwc(&status, dbkey, buffer, &class, &type, &freq);
 		if (status == HSUCC) {
-			len = strlen(buffer) + 1;
-			obj = safemalloc(len);
-			strcpy(obj, buffer);
+			sv_setpv(sv_str, buffer);
+			sv_setiv(sv_class, class);
+			sv_setiv(sv_type, type);
+			sv_setiv(sv_freq, freq);
 		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		obj
-		class
-		type
-		freq
+		sv_str
+		sv_class
+		sv_type
+		sv_freq
 
 
 #/***************************************************************************
@@ -2167,11 +2261,11 @@ double	tbl
 #/===========================================================================
 #/===========================================================================
 int
-perl_Cfmgtnl(dbkey, objnam, index, str, xinlen=0, xoutlen=0)
+perl_Cfmgtnl(dbkey, objnam, index, sv_str, xinlen=0, xoutlen=0)
 int		dbkey
 char	*objnam
 int		index
-char	*str		=	NO_INIT
+SV		*sv_str
 int		xinlen
 int		xoutlen
 
@@ -2188,14 +2282,14 @@ char	*buffer;
 			buffer = (char *)safemalloc((inlen+1) * sizeof(char));
 			cfmgtnl(&status, dbkey, objnam, index, buffer, inlen, &outlen);
 			worked = status == HSUCC;
-			str = newString(buffer);
+			sv_setpv(sv_str, buffer);
 			safefree(buffer);
 		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		str
+		sv_str
 
 #/===========================================================================
 #/		cfmrrng		R e a d   R a n g e   o f   D a t a
@@ -2221,7 +2315,7 @@ SV		*sv;
 SV		*sv2;
 I32		ix;
 int		len;
-int		rlen;
+int		rlen	=	0;
 int		rng[3];
 AV		*datarray;
 AV		*rngarray;
@@ -2242,24 +2336,10 @@ int		lyear;
 int		lprd;
 double	*dptr;
 double	dtmp;
+int		ii = 0;
 
 
 	CODE:
-#/		----------------------------------------------------------------------
-#/		See if we were given a real variable.  If so, clear it out.
-#/		----------------------------------------------------------------------
-		if (SvROK(data) && (SvTYPE(SvRV(data)) == SVt_PVAV)) {
-			datarray = (AV *)SvRV(data);
-			av_clear(datarray);
-
-#/		----------------------------------------------------------------------
-#/		----------------------------------------------------------------------
-		} else {
-			datarray = newAV();
-			SvREFCNT_dec(data);
-			data = newRV_inc((SV *)datarray);
-		}
-
 #/		----------------------------------------------------------------------
 #/		First, let's see what type of data object we are reading.  This will
 #/		affect what we do with the DATA set and the MISSING TABLE stuff.
@@ -2267,26 +2347,62 @@ double	dtmp;
 		cfmosiz(&status, dbkey, objnam, &class, &type, &freq,
 					&fyear, &fprd, &lyear, &lprd);
 
+		if (status != HSUCC) {
+			worked = FALSE;
+		}
+
+#/		----------------------------------------------------------------------
+#/		See if we were given a real variable in which to save data.  If so, 
+#/		clear it out.
+#/		----------------------------------------------------------------------
+		if (worked) {
+			if (SvROK(data)) {
+				if (SvTYPE(SvRV(data)) == SVt_PVAV) {
+					datarray = (AV *)SvRV(data);
+					av_clear(datarray);
+				}
+
+#/		----------------------------------------------------------------------
+#/		----------------------------------------------------------------------
+			} else {
+				datarray = newAV();
+				SvREFCNT_dec(data);
+				data = newRV_inc((SV *)datarray);
+			}
+		}
+
 #/		----------------------------------------------------------------------
 #/		Check to see if we have been given a valid RANGE.
 #/		----------------------------------------------------------------------
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
-			rngarray = (AV *)SvRV(range);
-		} else {
-			status = HBRNG;
-			worked = FALSE;
-		}
 
-		if (worked && av_len(rngarray) == 2) {
-			for (ix=0; ix<3; ix++) {
-				svptr = av_fetch(rngarray, ix, 0);
-				rng[ix] = SvIV(*svptr);
-			}
+			rngarray = (AV *)SvRV(range);
+
+			if (av_len(rngarray) == 2) {
+				for (ix=0; ix<3; ix++) {
+					svptr = av_fetch(rngarray, ix, 0);
+					rng[ix] = SvIV(*svptr);
+				}
 #/			----------------------------------------------------------
 #/			This might be cheating but I believe it is correct...
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
-			rlen = rng[2] - rng[1] + 1;
+				rlen = rng[2] - rng[1] + 1;
+			}
+
+#/		----------------------------------------------------------------------
+#/		If there is no frequency then this is a SCALAR and needs to be handled
+#/		as such.  FAME will ignore the 'range' object but we need a length.
+#/		----------------------------------------------------------------------
+		} else if (freq == HUNDFX) {
+			rlen = 1;
+
+#/		----------------------------------------------------------------------
+#/		Not much we can do here...
+#/		----------------------------------------------------------------------
+		} else {
+			status = HBRNG;
+			worked = FALSE;
 		}
 
 #/		----------------------------------------------------------------------
@@ -2319,89 +2435,131 @@ double	dtmp;
 #/		We now know that data type is one of the valid types.  'default'
 #/		now takes on the meaning "date frequency" type.
 #/		----------------------------------------------------------------------
-		cfmrrng(&status, dbkey, objnam, rng, (float *)vptr, miss, tbl);
-
 		if (worked) {
-			for (i=0; i<rlen; i++) {
+			cfmrrng(&status, dbkey, objnam, rng, (float *)vptr, miss, tbl);
+			if (status != HSUCC) {
+				worked = FALSE;
+			}
+		}
+
+#/		----------------------------------------------------------------------
+#/		Copy the data into the array that is to be returned.
+#/		----------------------------------------------------------------------
+		if (worked) {
+
+#/		----------------------------------------------------------------------
+#/		If there is no frequency, it is a scalar.  For now, however, it is
+#/		returned as the first element of an array (which is consistent with
+#/		the Fame C-HLI documentation).
+#/		----------------------------------------------------------------------
+			if (freq == HUNDFX) {
 				switch(type) {
 				  case HNUMRC:
-					if (fptr[i] == FNUMNA) {
-						sv = newSVpv("NA", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (fptr[i] == FNUMNC) {
-						sv = newSVpv("NC", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (fptr[i] == FNUMND) {
-						sv = newSVpv("ND", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else {
-						sv = newSVnv(fptr[i]);
-						av_push(datarray, sv);
-					}
+#/					printf("You should see HNUMRC '%s'%g'\n", objnam, ((float *)vptr)[0]);
+					sv = newSVnv(((float *)vptr)[0]);
 					break;
-
 				  case HBOOLN:
-					if (iptr[i] == FBOONA) {
-						sv = newSVpv("NA", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (iptr[i] == FBOONC) {
-						sv = newSVpv("NC", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (iptr[i] == FBOOND) {
-						sv = newSVpv("ND", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else {
-						sv = newSViv(iptr[i]);
-						av_push(datarray, sv);
-					}
+#/					printf("You should see HBOOLN '%d'\n", ((int *)vptr)[0]);
+					sv = newSViv(((int *)vptr)[0]);
 					break;
-
 				  case HPRECN:
-					if (dptr[i] == FPRCNA) {
-						sv = newSVpv("NA", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (dptr[i] == FPRCNC) {
-						sv = newSVpv("NC", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (dptr[i] == FPRCND) {
-						sv = newSVpv("ND", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else {
-						sv = newSVnv(dptr[i]);
-						av_push(datarray, sv);
-					}
+#/					printf("You should see HPRECN '%g'\n", ((double *)vptr)[0]);
+					sv = newSVnv(((double *)vptr)[0]);
 					break;
-
 				  default:
-					if (iptr[i] == FDATNA) {
-						sv = newSVpv("NA", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (iptr[i] == FDATNC) {
-						sv = newSVpv("NC", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else if (iptr[i] == FDATND) {
-						sv = newSVpv("ND", 0);
-						sv2 = newRV_noinc(sv);
-						av_push(datarray, sv2);
-					} else {
-						sv = newSViv(iptr[i]);
-						av_push(datarray, sv);
-					}
+#/					printf("You should see DATE for '%d'\n", ((int *)vptr)[0]);
+					sv = newSViv(((int *)vptr)[0]);
 					break;
+				}
+				av_push(datarray, sv);
+				
 
+#/		----------------------------------------------------------------------
+#/			Otherwise this is an array so set all the values.
+#/		----------------------------------------------------------------------
+			} else {
+				for (i=0; i<rlen; i++) {
+					switch(type) {
+					  case HNUMRC:
+						if (fptr[i] == FNUMNA) {
+							sv = newSVpv("NA", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (fptr[i] == FNUMNC) {
+							sv = newSVpv("NC", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (fptr[i] == FNUMND) {
+							sv = newSVpv("ND", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else {
+							sv = newSVnv(fptr[i]);
+							av_push(datarray, sv);
+						}
+						break;
+
+					  case HBOOLN:
+						if (iptr[i] == FBOONA) {
+							sv = newSVpv("NA", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (iptr[i] == FBOONC) {
+							sv = newSVpv("NC", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (iptr[i] == FBOOND) {
+							sv = newSVpv("ND", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else {
+							sv = newSViv(iptr[i]);
+							av_push(datarray, sv);
+						}
+						break;
+
+					  case HPRECN:
+						if (dptr[i] == FPRCNA) {
+							sv = newSVpv("NA", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (dptr[i] == FPRCNC) {
+							sv = newSVpv("NC", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (dptr[i] == FPRCND) {
+							sv = newSVpv("ND", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else {
+							sv = newSVnv(dptr[i]);
+							av_push(datarray, sv);
+						}
+						break;
+
+					  default:
+						if (iptr[i] == FDATNA) {
+							sv = newSVpv("NA", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (iptr[i] == FDATNC) {
+							sv = newSVpv("NC", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else if (iptr[i] == FDATND) {
+							sv = newSVpv("ND", 0);
+							sv2 = newRV_noinc(sv);
+							av_push(datarray, sv2);
+						} else {
+							sv = newSViv(iptr[i]);
+							av_push(datarray, sv);
+						}
+						break;
+
+					}
 				}
 			}
+			data = newRV_inc((SV *)datarray);
 		}
 
 		RETVAL = status;
@@ -3300,63 +3458,96 @@ double	tbl
 #/===========================================================================
 #/		cfmtdat
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmtdat(freq, date, hour, minute, second, ddate)
+perl_Cfmtdat(freq, sv_date, hour, minute, second, ddate)
 int		freq
-int		date		=	NO_INIT
+SV		*sv_date
 int		hour
 int		minute
 int		second
 int		ddate
 
+	PREINIT:
+int		date;
+
 	CODE:
 		cfmtdat(&status, freq, &date, hour, minute, second, ddate);
+		if (status == HSUCC) {
+			sv_setiv(sv_date, date);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
 #/		cfmdatt
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmdatt(freq, date, hour, minute, second, ddate)
-int freq
-int date
-int hour		=	NO_INIT
-int minute		=	NO_INIT
-int second		=	NO_INIT
-int ddate		=	NO_INIT
+perl_Cfmdatt(freq, date, sv_hour, sv_minute, sv_second, sv_ddate)
+int		freq
+int		date
+SV		*sv_hour
+SV		*sv_minute
+SV		*sv_second
+SV		*sv_ddate
+
+	PREINIT:
+int		hour;
+int		minute;
+int		second;
+int		ddate;
 
 	CODE:
 		cfmdatt(&status, freq, date, &hour, &minute, &second, &ddate);
+		if (status == HSUCC) {
+			sv_setiv(sv_hour, hour);
+			sv_setiv(sv_minute, minute);
+			sv_setiv(sv_second, second);
+			sv_setiv(sv_ddate, ddate);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		hour
-		minute
-		second
-		ddate
+		sv_hour
+		sv_minute
+		sv_second
+		sv_ddate
 
 
 #/===========================================================================
 #/		cfmddat
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmddat(freq, date, year, month, day)
+perl_Cfmddat(freq, sv_date, year, month, day)
 int		freq
-int		date		=	NO_INIT
+SV		*sv_date
 int		year
 int		month
 int		day
 
+	PREINIT:
+int		date;
+
 	CODE:
 		cfmddat(&status, freq, &date, year, month, day);
+		if (status == HSUCC) {
+			sv_setiv(sv_date, date);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
@@ -3365,99 +3556,147 @@ int		day
 #/		Tested
 #/===========================================================================
 int
-perl_Cfmdatd(freq, date, year, month, day)
+perl_Cfmdatd(freq, date, sv_year, sv_month, sv_day)
 int		freq
 int		date
-int		year
-int		month	=	NO_INIT
-int		day		=	NO_INIT
+SV		*sv_year
+SV		*sv_month
+SV		*sv_day	
+
+	PREINIT:
+int		year;
+int		month;
+int		day;
 
 	CODE:
 		cfmdatd(&status, freq, date, &year, &month, &day);
+		if (status == HSUCC) {
+			sv_setiv(sv_year, year);
+			sv_setiv(sv_month, month);
+			sv_setiv(sv_day, day);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		year
-		month
-		day
+		sv_year
+		sv_month
+		sv_day
 
 
 #/===========================================================================
 #/		cfmpdat
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmpdat(freq, date, year, period)
+perl_Cfmpdat(freq, sv_date, year, period)
 int		freq
-int		date		=	NO_INIT
+SV		*sv_date
 int		year
 int		period
 
+	PREINIT:
+int		date;
+
 	CODE:
 		cfmpdat(&status, freq, &date, year, period);
+		if (status == HSUCC) {
+			sv_setiv(sv_date, date);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
 #/		cfmdatp
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmdatp(freq, date, year, period)
+perl_Cfmdatp(freq, date, sv_year, sv_period)
 int		freq
 int		date
-int		year		=	NO_INIT
-int		period		=	NO_INIT
+SV		*sv_year
+SV		*sv_period
+
+	PREINIT:
+int		year;
+int		period;
 
 	CODE:
 		cfmdatp(&status, freq, date, &year, &period);
+		if (status == HSUCC) {
+			sv_setiv(sv_year, year);
+			sv_setiv(sv_period, period);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		year
-		period
+		sv_year
+		sv_period
 
 
 #/===========================================================================
 #/		cfmfdat
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmfdat(freq, date, year, period, fmonth=HDEC, flabel=HFYFST)
-int freq
-int date		=	NO_INIT
-int year
-int period
-int fmonth
-int flabel
+perl_Cfmfdat(freq, sv_date, year, period, fmonth=HDEC, flabel=HFYFST)
+int		freq
+SV		*sv_date
+int		year
+int		period
+int		fmonth
+int		flabel
+
+	PREINIT:
+int		date;
 
 	CODE:
 		cfmfdat(&status, freq, &date, year, period, fmonth=HDEC, flabel=HFYFST);
+		if (status == HSUCC) {
+			sv_setiv(sv_date, date);
+		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
 #/		cfmdatf
 #/===========================================================================
+#/		Tested
+#/===========================================================================
 int
-perl_Cfmdatf(freq, date, year, period, fmonth, flabel)
+perl_Cfmdatf(freq, date, sv_year, sv_period, fmonth, flabel)
 int		freq
 int		date
-int		year		=	NO_INIT
-int		period		=	NO_INIT
+SV		*sv_year
+SV		*sv_period
 int		fmonth
 int		flabel
 
+	PREINIT:
+int		year;
+int		period;
+
 	CODE:
-		cfmdatf(&status, freq, date, &year, &period, fmonth=HDEC, flabel=HFYFST);
+		cfmdatf(&status, freq, date, &year, &period, fmonth=HDEC,flabel=HFYFST);
+		if (status == HSUCC) {
+			sv_setiv(sv_year, year);
+			sv_setiv(sv_period, period);
+		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		year
-		period
+		sv_year
+		sv_period
 
 
 #/===========================================================================
@@ -3466,30 +3705,34 @@ int		flabel
 #/		Tested
 #/===========================================================================
 int
-perl_Cfmldat(freq, date, datestr, month=HDEC, label=HFYFST, century=DEF_CENT)
+perl_Cfmldat(freq, sv_date, datestr, month=HDEC, label=HFYFST, century=DEF_CENT)
 int		freq
-int		date	=	NO_INIT
+SV		*sv_date
 char	*datestr
 int		month
 int		label
 int		century
 
+	PREINIT:
+int		date;
+
 	CODE:
 		cfmldat(&status, freq, &date, datestr, month, label, century);
+		sv_setiv(sv_date, date);
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
 #/		cfmdatl
 #/===========================================================================
 int
-perl_Cfmdatl(freq, date, datestr, month=HDEC, label=HFYFST)
+perl_Cfmdatl(freq, date, sv_datestr, month=HDEC, label=HFYFST)
 int		freq
 int		date
-char	*datestr	=	NO_INIT
+SV		*sv_datestr
 int		month
 int		label
 
@@ -3499,43 +3742,47 @@ char	buf[SMALLBUF];
 	CODE:
 		cfmdatl(&status, freq, date, buf, month, label);
 		if (status == HSUCC) {
-			datestr = newString(buf);
+			sv_setpv(sv_datestr, buf);
 		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		datestr
+		sv_datestr
 
 
 #/===========================================================================
 #/		cfmidat
 #/===========================================================================
 int
-perl_Cfmidat(freq, date, datestr, image="<YEAR>/<MZ>/<DZ>", month=HDEC, label=HFYFST, century=DEF_CENT)
+perl_Cfmidat(freq, sv_date, datestr, image="<YEAR>/<MZ>/<DZ>", month=HDEC, label=HFYFST, century=DEF_CENT)
 int		freq
-int		date	=	NO_INIT
+SV		*sv_date
 char	*datestr
 char	*image
 int		month
 int		label
 int		century
 
+	PREINIT:
+int		date;
+
 	CODE:
 		cfmidat(&status, freq, &date, datestr, image, month, label, century);
+		sv_setiv(sv_date, date);
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
-		date
+		sv_date
 
 
 #/===========================================================================
 #/		cfmdati
 #/===========================================================================
 int
-perl_Cfmdati(freq, date, datestr, image="<YEAR>/<MZ>/<DZ>", month=HDEC, label=HFYFST)
+perl_Cfmdati(freq, date, sv_datestr, image="<YEAR>/<MZ>/<DZ>", month=HDEC, label=HFYFST)
 int		freq
 int		date
-char	*datestr	=	NO_INIT
+SV		*sv_datestr
 char	*image
 int		month
 int		label
@@ -3546,13 +3793,13 @@ char	buf[SMALLBUF];
 	CODE:
 		cfmdati(&status, freq, date, buf, image, month, label);
 		if (status == HSUCC) {
-			datestr = newString(buf);
+			sv_setpv(sv_datestr, buf);
 		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		datestr
+		sv_datestr
 
 
 #/***************************************************************************
@@ -3578,16 +3825,20 @@ char	*command
 #/		cfmopwk
 #/===========================================================================
 int
-perl_Cfmopwk(dbkey)
-int		dbkey		=	NO_INIT
+perl_Cfmopwk(sv_dbkey)
+SV		*sv_dbkey
+
+	PREINIT:
+int		dbkey;
 
 	CODE:
 		cfmopwk(&status, &dbkey);
+		sv_setiv(sv_dbkey, dbkey);
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		dbkey
+		sv_dbkey
 
 #/===========================================================================
 #/		cfmsinp
@@ -3618,34 +3869,42 @@ char	buffer[HMAXSCMD];
 #/		cfmoprc
 #/===========================================================================
 int
-perl_Cfmoprc(dbkey, connkey)
-int		dbkey		=	NO_INIT
+perl_Cfmoprc(sv_dbkey, connkey)
+SV		*sv_dbkey
 int		connkey
+
+	PREINIT:
+int		dbkey;
 
 	CODE:
 		cfmoprc(&status, &dbkey, connkey);
+		sv_setiv(sv_dbkey, dbkey);
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		dbkey
+		sv_dbkey
 
 
 #/===========================================================================
 #/		cfmopre
 #/===========================================================================
 int
-perl_Cfmopre(dbkey, svname)
-int		dbkey		=	NO_INIT
+perl_Cfmopre(sv_dbkey, svname)
+SV		*sv_dbkey
 char	*svname
+
+	PREINIT:
+int		dbkey;
 
 	CODE:
 		cfmopre(&status, &dbkey, svname);
+		sv_setiv(sv_dbkey, dbkey);
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		dbkey
+		sv_dbkey
 
 
 #/===========================================================================
@@ -3673,8 +3932,8 @@ char	*objnam
 #/		???
 #/===========================================================================
 int
-perl_Cfmferr(errtxt)
-char	*errtxt		=	NO_INIT
+perl_Cfmferr(sv_errtxt)
+SV		*sv_errtxt
 
 	PREINIT:
 int		i;
@@ -3689,12 +3948,12 @@ char	buf[BIGBUF+1];
 		for (i=BIGBUF-1; buf[i] == ' '; i--) {
 			buf[i] = '\0';
 		}
-		errtxt = newString(buf);
+		sv_setpv(sv_errtxt, buf);
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
-		errtxt
+		sv_errtxt
 
 
 #/===========================================================================

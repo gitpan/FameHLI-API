@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..22\n"; }
+BEGIN { $| = 1; print "1..24\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -37,6 +37,7 @@ my		$TestWriteCount	=	31;
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 my		$wr_num_test	=	"wr_num_test";
+my		$wr_nms_test	=	"wr_nms_test";
 my		$wr_nml_test	=	"wr_nml_test";
 my		$wr_boo_test	=	"wr_boo_test";
 my		$wr_str_test	=	"wr_str_test";
@@ -85,6 +86,7 @@ my		$rng;
 				"2nd: '%s'", $str);
 
 my		$ndata;
+my		$xdata;
 my		@testdata = NumData();
 my		@datetest = DateData();
 
@@ -94,6 +96,10 @@ my		@datetest = DateData();
 		ShowResults($log, 1,0,"cfmrrng(num)", 
 			Cfmrrng($dbkey, $wr_num_test, $rng, $ndata, HNTMIS, $NoMissTbl));
 		CompNumValues($log, \@testdata, $ndata, $TestWriteCount);
+
+		ShowResults($log, 1,0,"cfmrrng(nms)", 
+			Cfmrrng($dbkey, $wr_nms_test, $rng, $xdata, HNTMIS, $NoMissTbl));
+		CompNumValues($log, \@datetest, $xdata, 1);
 
 		ShowResults($log, 1,0,"cfmrrng(prc)", 
 			Cfmrrng($dbkey, $wr_prc_test, $rng, $pdata, HNTMIS, $NoMissTbl));

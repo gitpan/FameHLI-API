@@ -1,11 +1,11 @@
-API.pm
-Changes
-README
 API.h
+API.pm
 API.xs
+Changes
 MANIFEST
 Makefile.PL
 PWD.sample
+README
 t/01_Preliminary.t
 t/02_SetOptions.t
 t/03_SetRanges.t
@@ -30,8 +30,8 @@ HLI/HLI.xs
 HLI/Makefile.PL
 HLI/t/HLI_01_test.t
 EXT/Changes
-EXT/EXT.pm
 EXT/EXT.h
+EXT/EXT.pm
 EXT/EXT.xs
 EXT/Makefile.PL
 EXT/t/01_Preliminary.t
