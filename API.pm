@@ -32,6 +32,7 @@ our	%EXPORT_TAGS = (
 		Cfmabrt
 		Cfmclcn
 		Cfmopdb
+		Cfmspos
 		Cfmcldb
 		Cfmpodb
 		Cfmrsdb
@@ -58,18 +59,14 @@ our	%EXPORT_TAGS = (
 		Cfmsbas
 		Cfmsobs
 		Cfmgtatt
-		Cfmlatt
 		Cfmsatt
 		Cfmgnam
 		Cfmgtali
-		Cfmlali
 		Cfmsali
-		Cfmlsts
 		Cfmnlen
 		Cfmgsln
 		Cfmssln
 		Cfmgtaso
-		Cfmlaso
 		Cfmsaso
 		Cfmfdiv
 		Cfmtody
@@ -120,10 +117,8 @@ our	%EXPORT_TAGS = (
 		Cfmopwk
 		Cfmsinp 
 		Cfmoprc
-		Cfmopre
 		Cfmrmev
 		Cfmferr
-		Cfmlerr
 	) ] );
 
 our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
@@ -131,7 +126,7 @@ our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our	@EXPORT = qw(
 );
 
-$VERSION = '0.902';
+$VERSION = '0.903';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -378,7 +373,7 @@ This module was developed and tested under the following conditions:
 
    - Developed with Perl 5.6.0 on Solaris 2.6
    - Compiled using 'gcc' version 2.95.2
-   - Tested on Solaris 2.6 using Fame 8.0.23 and 9.0(beta)
+   - Tested on Solaris 2.6 using Fame 8.032 and 9.0(beta)
 
 =head1 FILES
 
@@ -458,6 +453,13 @@ let me know.  If it doesn't work, please let me know how
 you fixed it. :-)  I will attempt to get those fixes in
 the next release.
 
+=head2 And Speaking of Windows
+
+At the time of this writing, HDMODE does not work correctly
+(or at all) on Windows NT.  This is a known condition and
+Fame is working on a fix.  It should become available after 
+the next NT build for Fame.
+
 =head2 Missing Values
 
 Missing values are implemented as references to a string whose
@@ -467,12 +469,13 @@ aren't valid in FameLand, you can check to see if any returned
 value is a reference.  If so, it is probably one of the 3
 Missing Values.  Simply dereference it to see which one.
 
-=head2 Date Frequencies
+=head2 String Length arguments
 
-Handling of date types is currently very limited.  For SERIES
-I have only seriously tested HBUSNS and occasionally, HDAILY.
-Full date implementation will follow depending on my time,
-and the hew and cry of anyone helping to test this suite.
+In any C-HLI function which returns a string, you are 
+required to provide space for that string as well as telling
+the C-HLI how much space you provided.  The length arguments
+are option in FameHLI::API and are, for the most part, ignored
+even if you do proivde them.
 
 =head2 Object Name Conversion
 
@@ -516,17 +519,6 @@ Additionally, there aren't many useful diagnostics which
 use standard Perl channels.  Most of the error messages are
 printed to STDOUT.  So, until I can get to this, please
 don't make any mistakes.  ;-)
-
-=head2 Date Frequencies
-
-Most functions which expect a frequency for the index check
-to see that the frequency is either HBUSNS or HDAILY.  If not
-one of those two, it says "I don't know how to do that.".
-
-Not particularly helpful, but then this is the Alpha release.
-I will be implementing the rest of the date functionality at
-some point.  But for now, most of the work that I do is at
-HBUSNS frequency anyway.
 
 =head2 Missing Values
 
@@ -590,7 +582,7 @@ No muss, no fuss, no casting.
 =head1 RESTRICTIONS
 
 You will need to already have FAME installed on your system.
-This module was developed using FAME 8.0.32 and 8.2.3(beta).
+This module was developed using FAME 8.032 and 8.213(beta).
 
 Just as the C-HLI is not thread-safe, neither is this library
 since it is based entirely on libchli.  You have been warned.
@@ -631,49 +623,58 @@ is not currently implemented.  This is mainly limited to
 the functions dealing with B<Missing Values> and B<Unit of Work> stuff.
 
 The notable exception to this is C<Cfmrdfm> which is 
-broken in the C-HLI itself.
+partly broken in the underlying HLI itself.
 
-=head2 Using the HLI
+Also note: Any function with an I<*> (asterisk) in front of it has
+not been ported to Perl.  In I<C> you need to feed a properly
+sized buffer for string variables.  In Perl we do that for you.
+In addition, most C<inlen> and C<outlen> arguments are optional.
+If you do provide values for these, the values are ignored.
+These cases are noted with square braces around the argument.
+
+=head2 01 Using the HLI
 
   Cfmini()
   Cfmver(ver)
   Cfmfin()
 
-=head2 Setting Options in the HLI
+=head2 02 Setting Options in the HLI
 
   Cfmsopt(optname, optval)
 
-=head2 Setting Ranges
+=head2 03 Setting Ranges
 
   Cfmsrng(freq, syear, sprd, eyear, eprd, range, numobs)
   Cfmsfis(freq, syear, sprd, eyear, eprd, range, numobs, fmonth, flabel)
 
-=head2 Handling Connections
+=head2 04 Handling Connections
 
   Cfmopcn(connkey, service, hostname, username, password)
   Cfmgcid(dbkey, connkey)
  x Cfmcmmt(connkey)
  x Cfmabrt(connkey)
   Cfmclcn(connkey)
+ x Cfmasrt(connkey, assert_type, assertion, perspective, grouping, dblist)
 
-=head2 Handling Databases
+=head2 05 Handling Databases
 
   Cfmopdb(dbkey, dbname, mode)
+  Cfmspos(flag)
   Cfmcldb(key)
   Cfmpodb(dbkey)
   Cfmrsdb(dbkey)
   Cfmpack(dbkey)
   Cfmopdc(dbkey, dbname, mode, connkey)
 
-=head2 Handling Database Information and Attributes
+=head2 06 Handling Database Information and Attributes
 
   Cfmddes(dbkey, desc)
   Cfmddoc(dbkey, doc)
   Cfmgdba(dbkey, cyear, cmonth, cday, myear, mmonth, mday, desc, doc)
   Cfmgdbd(dbkey, freq, cdate, mdate)
-  Cfmglen(dbkey, deslen, doclen)
+ * Cfmglen
 
-=head2 Handling Data Objects
+=head2 07 Handling Data Objects
 
   Cfmnwob(dbkey, objnam, class, freq, type, basis, observ)
   Cfmalob(dbkey, objnam, class, freq, type, basis, observ, 
@@ -681,37 +682,36 @@ broken in the C-HLI itself.
   Cfmcpob(srckey, tarkey, srcnam, tarnam)
   Cfmdlob(dbkey, objnam)
   Cfmrnob(dbkey, oldname, newname)
- x Cfmasrt(connkey, assert_type, assertion, perspective, grouping, dblist)
 
-=head2 Handling Data Object Information and Attributes
+=head2 08 Handling Data Object Information and Attributes
 
   Cfmosiz(dbkey, objname, class, type, freq, fyear, fprd, lyear, lprd)
   Cfmgdat(dbkey, objnam, freq, cdate, mdate)
   Cfmwhat(dbkey, objnam, class, type, freq, basis, observ, 
             fyear, fprd, lyear, lprd, cyear, cmonth, cday, 
             myear, mmonth, mday, desc, doc)
-  Cfmncnt(dbkey, objnam, length)
-  Cfmdlen(dbkey, objnam, deslen, doclen)
+ * Cfmncnt
+ * Cfmdlen
   Cfmsdes(dbkey, objnam, desc)
   Cfmsdoc(dbkey, objnam, doc)
   Cfmsbas(dbkey, objnam, basis)
   Cfmsobs(dbkey, objnam, observ)
-  Cfmgtatt(dbkey, objnam, atttype, attnam, value, inlen, outlen)
-  Cfmlatt(dbkey, objnam, attyp, attnam, attlen)
+  Cfmgtatt(dbkey, objnam, atttype, attnam, value [, inlen [, outlen]])
+ * Cfmlatt
   Cfmsatt(dbkey, objnam, atttype, attnam, value)
   Cfmgnam(dbkey, objnam, basnam)
-  Cfmgtali(dbkey, objnam, alias, inlen, outlen)
-  Cfmlali(dbkey, objnam, alilen)
+  Cfmgtali(dbkey, objnam, alias [, inlen [, outlen]])
+ * Cfmlali
   Cfmsali(dbkey, objnam, aliass)
-  Cfmlsts(dbkey, objnam, range, lenary)
-  Cfmnlen(dbkey, objnam, index, length)
+ * Cfmlsts
+ * Cfmnlen
   Cfmgsln(dbkey, objnam, length)
   Cfmssln(dbkey, objnam, length)
   Cfmgtaso(dbkey, objnam, assoc)
-  Cfmlaso(dbkey, objnam, asolen)
+ * Cfmlaso
   Cfmsaso(dbkey, objnam, assoc)
 
-=head2 Handling Dates
+=head2 09 Handling Dates
 
   Cfmfdiv(freq1, freq2, flag)
   Cfmtody(freq, date)
@@ -725,7 +725,7 @@ broken in the C-HLI itself.
   Cfmpfrq(freq, base, nunits, year, month)
   Cfmufrq(freq, base, nunits, year, month)
 
-=head2 Handling Missing Values
+=head2 10 Handling Missing Values
 
 These are not implemented in such a way as you would want to use them.
 
@@ -739,21 +739,21 @@ These are not implemented in such a way as you would want to use them.
  x Cfmisdm
  x Cfmissm
 
-=head2 Wildcarding
+=head2 11 Wildcarding
 
   Cfminwc(dbkey, wildname)
   Cfmnxwc(dbkey, obj, class, type, freq)
 
-=head2 Reading Data
+=head2 13 Reading Data
 
- x Cfmrdfa(dbkey, objnam, wntobs, syear, sprd, gotobs, data, tmiss, tbl)
-  Cfmgtnl(dbkey, objnam, index, str, inlen, outlen)
+ * Cfmrdfa
+  Cfmgtnl(dbkey, objnam, index, str [, inlen [, outlen]])
   Cfmrrng(dbkey, objnam, range, data, miss, table)
   Cfmgtstr(dbkey, objnam, range, str)
-  Cfmgtsts(dbkey, objnam, range, data)
+  Cfmgtsts(dbkey, objnam, range, data [, misaray])
  x Cfmrdfm(dbkey, objname, source)
 
-=head2 Writing Data
+=head2 12 Writing Data
 
   Cfmwrng(dbkey, objnam, range, data, miss, table)
   Cfmwstr(dbkey, objnam, range, val, ismiss, length)
@@ -761,7 +761,7 @@ These are not implemented in such a way as you would want to use them.
   Cfmwtnl(dbkey, objnam, idx, val)
  x Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
 
-=head2 Converting Dates
+=head2 14 Converting Dates
 
   Cfmtdat(freq, date, hour, minute, second, ddate)
   Cfmdatt(freq, date, hour, minute, second, ddate)
@@ -776,22 +776,22 @@ These are not implemented in such a way as you would want to use them.
   Cfmidat(freq, date, datestr, image, month, label, century)
   Cfmdati(freq, date, datestr, image, month, label)
 
-=head2 Using the FAME/Server
+=head2 15 Using the FAME/Server
 
   Cfmfame(command)
   Cfmopwk(dbkey)
   Cfmsinp(cmd) 
 
-=head2 Using an Analytical Channel
+=head2 16 Using an Analytical Channel
 
   Cfmoprc(dbkey, connkey)
-  Cfmopre(dbkey, svname)
+ * Cfmopre
   Cfmrmev(dbkey, expr, optns, wdbkey, objnam)
 
-=head2 Getting FAME Errors
+=head2 17 Getting FAME Errors
 
   Cfmferr(errtxt)
-  Cfmlerr
+ * Cfmlerr
 
 =head2 Extensions
 

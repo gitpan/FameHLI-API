@@ -470,6 +470,26 @@ int		key;
 
 
 #*===========================================================================
+#*		cfmspos		P O S T / R E S T O R E   S W I T C H
+#*===========================================================================
+#*		Enable/Disable the post/restore mechanism for databases.  Use with
+#*		extreme caution.  If a process dies without posting or closing a
+#*		database, the result will be a corrupt and unusable database.
+#*===========================================================================
+#*===========================================================================
+int
+perl_Cfmspos(flag)
+int		flag
+
+	CODE:
+		cfmspos(&status, flag);
+		RETVAL = status;
+
+	OUTPUT:
+		RETVAL
+
+
+#*===========================================================================
 #*		cfmcldb		C L O S E   F A M E   D A T A B A S E
 #*===========================================================================
 #*		Tested
@@ -689,33 +709,6 @@ int		mdate;
 		RETVAL
 		sv_cdate
 		sv_mdate
-
-
-#*===========================================================================
-#*		cfmglen
-#*=========================================================================*/
-int
-perl_Cfmglen(dbkey, sv_deslen, sv_doclen)
-int		dbkey
-SV		*sv_deslen
-SV		*sv_doclen
-
-	PREINIT:
-int		deslen;
-int		doclen;
-
-	CODE:
-		cfmglen(&status, dbkey, &deslen, &doclen);
-		if (status == HSUCC) {
-			sv_setiv(sv_deslen, deslen);
-			sv_setiv(sv_doclen, doclen);
-		}
-		RETVAL = status;
-
-	OUTPUT:
-		RETVAL
-		sv_deslen
-		sv_doclen
 
 
 #/***************************************************************************
@@ -1054,40 +1047,6 @@ int		length;
 
 
 #*===========================================================================
-#*		cfmdlen		Get NAMELIST's doc and desc length
-#*===========================================================================
-#*		This is implemented here for completeness and because it is easy.
-#*		There really isn't any reason to include it since you can get the
-#*		strings WITHOUT knowing how long they are anyway.
-#*=========================================================================*/
-#*		Tested 2001/02/14
-#*===========================================================================
-int
-perl_Cfmdlen(dbkey, objnam, sv_deslen, sv_doclen)
-int		dbkey
-char	*objnam
-SV		*sv_deslen
-SV		*sv_doclen
-
-	PREINIT:
-int		deslen;
-int		doclen;
-
-	CODE:
-		cfmdlen(&status, dbkey, objnam, &deslen, &doclen);
-		if (status == HSUCC) {
-			sv_setiv(sv_deslen, deslen);
-			sv_setiv(sv_doclen, doclen);
-		}
-		RETVAL = status;
-
-	OUTPUT:
-		RETVAL
-		sv_deslen
-		sv_doclen
-
-
-#*===========================================================================
 #*		cfmsdes		Set NAMELIST desc field
 #*=========================================================================*/
 #*		Tested 2001/02/14
@@ -1182,19 +1141,20 @@ int		observ
 #*			Date		2001/03/22
 #*===========================================================================
 int
-perl_Cfmgtatt(dbkey, objnam, sv_atttype, attnam, sv_value, inlen, sv_outlen)
+perl_Cfmgtatt(dbkey, objnam, sv_atttype, attnam, sv_value, xinlen=0, xoutlen=0)
 int		dbkey
 char	*objnam
 SV		*sv_atttype
 char	*attnam
 SV		*sv_value
-int		inlen
-SV		*sv_outlen
+int		xinlen
+int		xoutlen
 
 	PREINIT:
 int		worked	=	TRUE;
 int		atttype;
-int		outlen	=	0;
+int		inlen;
+int		outlen;
 float	f_value;
 double	d_value;
 int		i_value;
@@ -1212,12 +1172,9 @@ float	*valptr;
 			break;
 		  case HNAMEL:
 		  case HSTRNG:
-			if (inlen < 1) {
-				cfmlatt(&status, dbkey, objnam, atttype, attnam, &inlen);
-				if (status != HSUCC) {
-					printf("Couldn't get the attribute length!(%d)\n", status);
-					worked = FALSE;
-				}
+			cfmlatt(&status, dbkey, objnam, atttype, attnam, &inlen);
+			if (status != HSUCC) {
+				worked = FALSE;
 			}
 			if (worked) {
 				s_value = (char *)safemalloc(sizeof(char *) * inlen);
@@ -1240,6 +1197,11 @@ float	*valptr;
 			worked = (status == HSUCC || status == HTRUNC);
 		}
 
+#/		--------------------------------------------------------------
+#/		The theory here is that "If it isn't one of the other data
+#/		types, it must be a Date Frequency.  Since it is an existing
+#/		object, we will assume that this will hold here.
+#/		--------------------------------------------------------------
 		if (worked) {
 			switch(atttype) {
 			  case HNUMRC:
@@ -1254,16 +1216,11 @@ float	*valptr;
 				break;
 			  case HBOOLN:
 			  case HDATE:
-			  case HBUSNS:
-			  case HDAILY:
-				sv_setiv(sv_value, i_value);
-				break;
 			  default:
-				printf("Cfmgtatt: Why am I not elsewhere?\n");
+				sv_setiv(sv_value, i_value);
 				break;
 			}
 			sv_setiv(sv_atttype, atttype);
-			sv_setiv(sv_outlen, outlen);
 		}
 		RETVAL = status;
 
@@ -1271,32 +1228,14 @@ float	*valptr;
 		RETVAL
 		sv_value
 		sv_atttype
-		sv_outlen
-
-
-#*===========================================================================
-#*		cfmlatt		Get length of a user defined string or NAMELIST attribute
-#*===========================================================================
-#*		Tested	2001/03/22
-#*=========================================================================*/
-int
-perl_Cfmlatt(dbkey, objnam, attyp, attnam, attlen)
-int		dbkey
-char	*objnam
-int		attyp
-char	*attnam
-int		attlen		=	NO_INIT
-
-	CODE:
-		cfmlatt(&status, dbkey, objnam, attyp, attnam, &attlen);
-		RETVAL = status;
-	OUTPUT:
-		RETVAL
-		attlen
 
 
 #*===========================================================================
 #*		cfmsatt		Set the value of a user defined attribute
+#*=========================================================================*/
+#*		Attribute type should be a valid datatype.  Instead of checking
+#*		all valid date frequencies, we just use cfmufrq to see if we have
+#*		any valid freq.
 #*=========================================================================*/
 #*		Tested
 #*			Boolean		2001/03/22
@@ -1321,6 +1260,7 @@ double	d_value;
 char	*s_value;
 float	*valptr;
 int		xlen;
+int		worked	=	TRUE;
 
 	CODE:
 		switch (atttype) {
@@ -1338,14 +1278,9 @@ int		xlen;
 			valptr = (float *)(s_value);
 			break;
 		  case HBOOLN:
-		  case HDATE:
-		  case HBUSNS:
-		  case HDAILY:
+		  default:
 			i_value = SvIV(sv_value);
 			valptr = (float *)(&i_value);
-			break;
-		  default:
-			printf("Cfmsatt: Why am I not elsewhere?\n");
 			break;
 		}
 		cfmsatt(&status, dbkey, objnam, atttype, attnam, valptr);
@@ -1388,66 +1323,39 @@ char	buff[SMALLBUF];
 #*		Tested 2001/03/22
 #*===========================================================================
 int
-perl_Cfmgtali(dbkey, objnam, sv_alias, inlen, sv_outlen)
+perl_Cfmgtali(dbkey, objnam, sv_alias, xinlen=0, xoutlen=0)
 int		dbkey
 char	*objnam
 SV		*sv_alias
-int		inlen;
-SV		*sv_outlen;
+int		xinlen;
+int		xoutlen;
 
 	PREINIT:
+int		worked = TRUE;
+int		inlen;
 int		outlen;
 char	*buff;
 
 	CODE:
-		if (inlen < 1) {
-			cfmlali(&status, dbkey, objnam, &inlen);
+		cfmlali(&status, dbkey, objnam, &inlen);
+		if (status != HSUCC) {
+			worked = FALSE;
 		}
 
-		buff = (char *)safemalloc(inlen+1);
-		outlen = inlen;
+		if (worked) {
+			buff = (char *)safemalloc(inlen+1);
+			outlen = inlen;
 
-		cfmgtali(&status, dbkey, objnam, buff, inlen, &outlen);
-		if (status == HSUCC) {
-			sv_setpv(sv_alias, buff);
-			sv_setiv(sv_outlen, outlen);
-		} else {
-			printf("Cfmgtali: Danger Will Robinson! (%d)\n", status);
+			cfmgtali(&status, dbkey, objnam, buff, inlen, &outlen);
+			if (status == HSUCC) {
+				sv_setpv(sv_alias, buff);
+			}
 		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
 		sv_alias
-		sv_outlen
-
-
-#*===========================================================================
-#*		cfmlali		Get the length of an objects aliases
-#*===========================================================================
-#*		Tested 2001/02/14
-#*===========================================================================
-int
-perl_Cfmlali(dbkey, objnam, sv_alilen)
-int		dbkey
-char	*objnam
-SV		*sv_alilen
-
-	PREINIT:
-int		len;
-
-	CODE:
-		sv_setiv(sv_alilen, -1);
-		cfmlali(&status, dbkey, objnam, &len);
-		if (status == HSUCC) {
-			sv_setiv(sv_alilen, len);
-		} else {
-			printf("Cfmlali: Danger Will Robinson! (%d)\n", status);
-		}
-		RETVAL = status;
-	OUTPUT:
-		RETVAL
-		sv_alilen
 
 
 #*===========================================================================
@@ -1565,36 +1473,6 @@ int		*lenary;
 	OUTPUT:
 		RETVAL
 		sv_lenary
-
-
-#*===========================================================================
-#*		cfmnlen		Get the buffer length needed for reading a namelist
-#*=========================================================================*/
-#*		Tested ??		NOT TESTED
-#*=========================================================================*/
-int
-perl_Cfmnlen(dbkey, objnam, index, sv_length)
-int		dbkey
-char	*objnam
-int		index
-SV		*sv_length
-
-	PREINIT:
-int		length;
-
-	CODE:
-		cfmnlen(&status, dbkey, objnam, index, &length);
-		sv_setiv(sv_length, -1);
-		if (status == HSUCC) {
-			sv_setiv(sv_length, length);
-		} else {
-			printf("Cfmnlen: Danger Will Robinson! (%d)\n", status);
-		}
-		RETVAL = status;
-
-	OUTPUT:
-		RETVAL
-		sv_length
 
 
 #*===========================================================================
@@ -2289,27 +2167,35 @@ double	tbl
 #/===========================================================================
 #/===========================================================================
 int
-perl_Cfmgtnl(dbkey, objnam, index, str, inlen, outlen)
+perl_Cfmgtnl(dbkey, objnam, index, str, xinlen=0, xoutlen=0)
 int		dbkey
 char	*objnam
 int		index
 char	*str		=	NO_INIT
-int		inlen
-int		outlen		=	NO_INIT
+int		xinlen
+int		xoutlen
 
 	PREINIT:
-char	*buffer = (char *)safemalloc((inlen+1) * sizeof(char));
+int		inlen;
+int		outlen;
+int		worked	=	TRUE;
+char	*buffer;
 
 	CODE:
-		cfmgtnl(&status, dbkey, objnam, index, buffer, inlen, &outlen);
-		str = newString(buffer);
-		safefree(buffer);
+		cfmnlen(&status, dbkey, objnam, index, &inlen);
+		worked = status == HSUCC;
+		if (worked) {
+			buffer = (char *)safemalloc((inlen+1) * sizeof(char));
+			cfmgtnl(&status, dbkey, objnam, index, buffer, inlen, &outlen);
+			worked = status == HSUCC;
+			str = newString(buffer);
+			safefree(buffer);
+		}
 		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
 		str
-		outlen
 
 #/===========================================================================
 #/		cfmrrng		R e a d   R a n g e   o f   D a t a
@@ -2412,23 +2298,26 @@ double	dtmp;
 				fptr = (float *)safemalloc(sizeof(float) * rlen);
 				vptr = (void *)fptr;
 				break;
-			  case HBUSNS:
-			  case HDAILY:
-			  case HBOOLN:
-				iptr = (int *)safemalloc(sizeof(int) * rlen);
-				vptr = (void *)iptr;
-				break;
 			  case HPRECN:
 				dptr = (double *)safemalloc(sizeof(double) * rlen);
 				vptr = (void *)dptr;
 				break;
+			  case HSTRNG:
+			  case HNAMEL:
+				worked = FALSE;
+				status = -1;
+				break;
+			  case HBOOLN:
 			  default:
-				printf("I don't know how to process '%d'\n", type);
+				iptr = (int *)safemalloc(sizeof(int) * rlen);
+				vptr = (void *)iptr;
 				break;
 			}
 		}
 
 #/		----------------------------------------------------------------------
+#/		We now know that data type is one of the valid types.  'default'
+#/		now takes on the meaning "date frequency" type.
 #/		----------------------------------------------------------------------
 		cfmrrng(&status, dbkey, objnam, rng, (float *)vptr, miss, tbl);
 
@@ -2492,8 +2381,7 @@ double	dtmp;
 					}
 					break;
 
-				  case HBUSNS:
-				  case HDAILY:
+				  default:
 					if (iptr[i] == FDATNA) {
 						sv = newSVpv("NA", 0);
 						sv2 = newRV_noinc(sv);
@@ -2512,9 +2400,6 @@ double	dtmp;
 					}
 					break;
 
-				  default:
-					printf("I don't know how to handle that...\n");
-					break;
 				}
 			}
 		}
@@ -2643,14 +2528,19 @@ int		outlen;
 #/===========================================================================
 #/		Tested
 #/			2001/04/17
-#/		Missing values passed, but not missing table values.
+#/		Since the "misaray" array is essentially redundant information, it
+#/		is not returned.  Simply check to see if the returned object is a
+#/		reference or not.
 #/===========================================================================
 int
-perl_Cfmgtsts(dbkey, objnam, range, data)
+perl_Cfmgtsts(dbkey, objnam, range, data, xmiss=0, xin=0, xout=0)
 int		dbkey
 char	*objnam
 SV		*range
 SV		*data
+SV		*xmiss
+SV		*xin
+SV		*xout
 
 	PREINIT:
 int		i;
@@ -2965,22 +2855,26 @@ double	*dptr;
 			  case HNUMRC:
 				fptr = (float *)safemalloc(sizeof(float) * rlen);
 				break;
-			  case HBOOLN:
-				iptr = (int *)safemalloc(sizeof(int) * rlen);
-				break;
 			  case HPRECN:
 				dptr = (double *)safemalloc(sizeof(double) * rlen);
 				break;
-			  case HBUSNS:
-			  case HDAILY:
+			  case HSTRNG:
+			  case HNAMEL:
+				worked = FALSE;
+				status = -1;
+				break;
+			  case HBOOLN:
+			  default:
 				iptr = (int *)safemalloc(sizeof(int) * rlen);
 				break;
 			}
+		}
 
 #/			----------------------------------------------------------
 #/			Next we get the value and determine if it is missing
 #/			or not
 #/			----------------------------------------------------------
+		if (worked) {
 			for (ix=0; ix<= len; ix++) {
 				missing = 0;
 				svptr = av_fetch(datarray, ix, 0);
@@ -3063,8 +2957,10 @@ double	*dptr;
 						break;
 					}
 					break;
-				  case HBUSNS:
-				  case HDAILY:
+#/			----------------------------------------------------------
+#/					Date Frequency
+#/			----------------------------------------------------------
+				  default:
 					switch(missing) {
 					  case 0:
 						iptr[ix] = SvIV(*svptr);
@@ -3112,16 +3008,12 @@ double	*dptr;
 				cfmwrng(&status, dbkey, objnam, rng, (float *)dptr, 
 							miss, (float *)tbl);
 				break;
-			  case HBUSNS:
-			  case HDAILY:
+			  default:
 				for (ix=len+1; ix<rlen; ix++) {
 					iptr[ix] = FDATND;
 				}
 				cfmwrng(&status, dbkey, objnam, rng, (float *)iptr, 
 							miss, (float *)tbl);
-				break;
-			  default:
-				printf("I don't know how to process '%d'.\n", type);
 				break;
 			}
 #/			----------------------------------------------------------
@@ -3145,15 +3037,10 @@ double	*dptr;
 			}
 			break;
 		  case HBOOLN:
-		  case HDATE:
-		  case HBUSNS:
-		  case HDAILY:
+		  default:
 			if (iptr) {
 				safefree(iptr);
 			}
-			break;
-		  default:
-			printf("I don't know how to process '%d'.\n", type);
 			break;
 		}
 		RETVAL = status;

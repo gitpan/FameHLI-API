@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..19\n"; }
+BEGIN { $| = 1; print "1..18\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -30,11 +30,13 @@ my		$warn		=	0;
 
 {
 my		$vars			=	GetVars();
-my		$datstr = $vars->{spindate};
-my		$db = $vars->{spindex};
+my		$datstr			=	$vars->{spindate};
+my		$db				=	$vars->{spindex};
 my		$dbkey;
 my		$host			=	$vars->{hostname};
+my		$pwd			=	$vars->{password};
 my		$service		=	$vars->{service};
+my		$user			=	$vars->{username};
 
 ;#		------------------------------------------------------------
 ;#		Start things off by opening the log and initialzing Fame.
@@ -48,21 +50,21 @@ my		$log = StartTest("17_Misc");
 ;#		First, let's load up the return codes...
 ;#		------------------------------------------------------------
 		$r1 = Cfmfame("fred is here");
-		$r2 = Cfmlerr($len);
 		$r3 = Cfmferr($msg);
 
 ;#		------------------------------------------------------------
 ;#		Print out the messages and, whazzup? No error length!
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,HFAMER,"cfmfame", $r1, "Failed properly");
-		ShowResults($log, 1,HSUCC,"cfmlerr", $r2, $len);
 		ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
 
 ;#		------------------------------------------------------------
 ;#		Now, open some stuff so we can use remeval...
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,HSUCC,"cfmopre", 
-			Cfmopre($dbkey, "$service\@$host"));
+		ShowResults($log, 1,HSUCC,"cfmopcn", 
+			Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
+		ShowResults($log, 1,HSUCC,"cfmoprc", 
+			Cfmoprc($dbkey, $conn), $dbkey);
 		ShowResults($log, 1,HSUCC,"cfmopdb", 
 			Cfmopdb($wdbkey, "testdb", HUMODE));
 
@@ -70,14 +72,12 @@ my		$log = StartTest("17_Misc");
 ;#		Load up a new batch of return codes...
 ;#		------------------------------------------------------------
 		$r1 = Cfmrmev($dbkey, "fred is here", "", $wdbkey, "fred");
-		$r2 = Cfmlerr($len);
 		$r3 = Cfmferr($msg);
 
 ;#		------------------------------------------------------------
 ;#		Print out the messages and voila! we have an error length!
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,HFAMER,"cfmrmev", $r1, "Failed properly");
-		ShowResults($log, 1,HSUCC,"cfmlerr", $r2, $len);
 		ShowResults($log, 1,HSUCC,"cfmferr", $r3, $msg);
 
 ;#		------------------------------------------------------------

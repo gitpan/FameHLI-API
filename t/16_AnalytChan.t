@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..11\n"; }
+BEGIN { $| = 1; print "1..10\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -36,7 +36,6 @@ my		$cbkey;
 my		$dbkey;
 my		$host			=	$vars->{hostname};
 my		$pwd			=	$vars->{password};
-my		$rbkey;
 my		$rc;
 my		$service		=	$vars->{service};
 my		$siteserver		=	$vars->{siteserver};
@@ -108,10 +107,14 @@ my		$newcbkey;
 			Cfmoprc($cbkey, $conn), $cbkey);
 		ShowResults($log, 1,0,"cfmgcid", 
 			Cfmgcid($cbkey, $newcbkey), $newcbkey);
-		ShowResults($log, 1,0,"cfmopre", 
-			Cfmopre($rbkey, $siteserver), $rbkey);
+
+;#		------------------------------------------------------------
+;#		We need to open something here so rmev can work.
+;#		------------------------------------------------------------
+		ShowResults($log, 1,0,"cfmopre", 999);	# depricated
+
 		ShowResults($log, 1,0,"cfmrmev", 
-			Cfmrmev($rbkey, "lastvalue($ticker)", "freq b",
+			Cfmrmev($cbkey, "lastvalue($ticker)", "freq b",
 				$dbkey, "ticker.last"),
 				"Please see next entry for results");
 

@@ -1,19 +1,28 @@
 Revision history for Perl extension FameHLI.
 
-0.1   Various times through 1999
-    - original version written using SWIG
+0.903 Mon Apr 23, 2001
 
-0.2   Thu Oct  5 13:23:52 2000
-    - original XS version; created by h2xs 1.19
+    FameHLI::API
+    - Fixed the "Date Frequency" stuff.  If a data type is not one
+      of the standard "Num, Prec, Str or Bool" datatypes then it
+      is probably one of the several hundred Date Frequencies.
+    - Made the length arguments optional (and ignored) of functions 
+      which return strings.  This brings FameHLI in line with
+      TimeIQ in relieving the programmer from that drudge.
+    - Added the new "cfmspos" function for 9.0.  Please see Fame
+      docs when 9.0 comes out.  This function has a pretty strong
+      'gotcha' if your program exits abnormally.
+    - Removed "Get Length" functions and inserted "defaults" for 
+      length arguments.
+    - Removed 'cfmopre' function.
 
-0.2   Various times through 2000
-    - enhancing performance and adding more fucntions
-
-0.9   Fri Mar 23 2001
-    - First external ALPHA tester
-
-0.901 Wed Apr 18, 2001
-    - First post to CPAN
+    FameHLI::API/tests
+    - Removed arguments from functions not needing "length" related
+      elements.
+    - Removed tests for depricated functions.
+    - Removed "Get Length" function tests
+    - Removed Cfmopre which is depricated.  Change calls to use
+      'cfmopcn' and 'cfmoprc' instead.
 
 0.902 Thu Apr 19, 2001
 
@@ -47,3 +56,19 @@ Revision history for Perl extension FameHLI.
       calls in the EXT module if I didn't call cfmini there as well
       in the BOOT code.
     - Added the ':all' EXPORT_TAG so everything could be imported.
+
+0.901 Wed Apr 18, 2001
+    - First post to CPAN
+
+0.9   Fri Mar 23 2001
+    - First external ALPHA tester
+
+0.3   Various times through 2000
+    - enhancing performance and adding more fucntions
+
+0.2   Thu Oct  5 13:23:52 2000
+    - original XS version; created by h2xs 1.19
+
+0.1   Various times through 1999
+    - original version written using SWIG
+

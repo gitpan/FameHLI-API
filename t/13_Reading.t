@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..23\n"; }
+BEGIN { $| = 1; print "1..22\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -74,16 +74,14 @@ my		$rng;
 ;#		------------------------------------------------------------
 		printf($log "--> Reading Data\n");
 ;#		------------------------------------------------------------
-		ShowResults($log, 0,0,"cfmrdfa", 999);	# not implemented yet
-
-my		$len	=	0;
+		ShowResults($log, 0,0,"cfmrdfa", 999);	# depricated
 
 		ShowResults($log, 1,0,"cfmgtnl", 
-			Cfmgtnl($dbkey, $wr_nml_test, HNLALL, $str, 100, $len), 
+			Cfmgtnl($dbkey, $wr_nml_test, HNLALL, $str, 100), 
 				"All: '%s'", $str);
 
 		ShowResults($log, 1,0,"cfmgtnl", 
-			Cfmgtnl($dbkey, $wr_nml_test, 2, $str, 100, $len), 
+			Cfmgtnl($dbkey, $wr_nml_test, 2, $str, 100), 
 				"2nd: '%s'", $str);
 
 my		$ndata;
@@ -112,16 +110,14 @@ my		@datetest = DateData();
 		ShowResults($log, 1,0,"cfmgtsts(strs)", 
 			Cfmgtsts($dbkey, $wr_str_test, $rng, $sdata));
 
-		ShowResults($log, 1,0,"cfmlsts",
-			Cfmlsts($dbkey, $wr_str_test, $rng, $lenarray),
-			"Array is: '%s'\n", join(", ", @{$lenarray}));
-
-		CompStrValues($log, \@datetest, $sdata, $lenarray, $TestWriteCount);
+		CompStrValues($log, \@datetest, $sdata, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmgtstr(str)", 
 			Cfmgtstr($dbkey, $wr_str_test, $rng, $str), $str);
 		ShowResults($log, 1,1,"Comp String", $str eq $datetest[0],
 			"Compare '%s' with '%s'\n", $str, $datetest[0]);
+
+		ShowResults($log, 0,0,"cfmrdfm", 999);	# partly broken.
 
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
@@ -186,7 +182,6 @@ sub		CompStrValues {
 my		$log	=	shift;
 my		$base	=	shift;
 my		$test	=	shift;
-my		$len	=	shift;
 my		$items	=	shift;
 my		$rc;
 my		$b;
@@ -239,15 +234,12 @@ my		$err = 0;
 						$err++;
 					}
 				} else {
-					printf($log "Checking '%s' and '%s' (%d)\n",
-						$base->[$i], $test->[$i], $len->[$i]);
+					printf($log "Checking '%s' and '%s' \n",
+						$base->[$i], $test->[$i]);
 					if ($base->[$i] ne $test->[$i]) {
 						print($log "--> '$base->[$i]' ne\n");
 						print($log "--> '$test->[$i]'\n\n");
 						$err++;
-					}
-					if (length($test->[$i]) != $len->[$i]) {
-						print($log "'$test->[$i]' isn't $len->[$i] long!\n");
 					}
 				}
 			} elsif (ref($test->[$i])) {
@@ -261,11 +253,6 @@ my		$err = 0;
 					$err++;
 				} else {
 					print($log "$i is not defined\n");
-					if ($len->[$i] != 2) {
-						printf($log "Why does it think it is %d long?\n",
-								$len->[$i]);
-						$err++;
-					}
 				}
 			}
 		}

@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..12\n"; }
+BEGIN { $| = 1; print "1..11\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -64,9 +64,6 @@ my		$image = "<YEAR>/<MZ>/<DZ>";
 				FormatDate($cdate, HBUSNS), 
 				FormatDate($mdate, HBUSNS));
 
-		ShowResults($log, 1,0,"cfmglen", 
-			Cfmglen($dbkey, $deslen, $doclen),
-			"Des:%d, Doc:%d", $deslen, $doclen);
-
+		ShowResults($log, 0,0,"cfmglen", 999);	# deprecated.
 		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }

@@ -608,7 +608,7 @@ our @DONT_EXPORT = qw(
 	HWRITE
 	HYES
 );
-our $VERSION = '0.902';
+our $VERSION = '0.903';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()

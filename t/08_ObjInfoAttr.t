@@ -18,7 +18,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..60\n"; }
+BEGIN { $| = 1; print "1..56\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -137,13 +137,13 @@ my			$deslen;
 			$newdesc = "A new description string";
 			$newdoc = "A new documentation string";
 
+			ShowResults($log, 0,0,"cfmncnt", 999);	# depricated
+			ShowResults($log, 0,0,"cfmdlen", 999);	# depricated
+
 			ShowResults($log, 1,0,"cfmsdes", 
 				FameHLI::API::Cfmsdes($dbkey, $thirdname, $newdesc));
 			ShowResults($log, 1,0,"cfmsdoc",
 				FameHLI::API::Cfmsdoc($dbkey, $thirdname, $newdoc));
-			ShowResults($log, 1,0,"cfmdlen", 
-				FameHLI::API::Cfmdlen($dbkey, $thirdname, $deslen, $doclen),
-				"Des: %d, Doc: %d", $deslen, $doclen);
 
 			ShowResults($log, 1,0,"cfmsbas",
 				FameHLI::API::Cfmsbas($dbkey, $thirdname, HBSBUS));
@@ -160,9 +160,6 @@ my			$deslen;
 				FameHLI::API::Cfmwtnl($dbkey, "BOOLEAN_ATTRIBUTE_NAMES",
 					HNLALL, "B_TEST"));
 
-			ShowResults($log, 1,0,"cfmncnt", 
-				FameHLI::API::Cfmncnt($dbkey, "BOOLEAN_ATTRIBUTE_NAMES", $len),
-				"BOOLEAN_ATTRIBUTE_NAMES is '%d' long.", $len);
 
 			ShowResults($log, 1,0,"cfmnwob(UDA-D)", 
 				FameHLI::API::Cfmnwob($dbkey, "DATE_ATTRIBUTE_NAMES",
@@ -202,14 +199,18 @@ my			$deslen;
 ;#		------------------------------------------------------------
 ;#		Next we can set an object with an attribute.
 ;#		------------------------------------------------------------
+
+			ShowResults($log, 0,0,"cfmlatt", 999);	# depricated
+
 my			$inlen = 0;
 			ShowResults($log, 1,0,"cfmsatt(Boolean)", 
-				FameHLI::API::Cfmsatt($dbkey, $thirdname, HBOOLN, "B_TEST", HYES),
+				FameHLI::API::Cfmsatt($dbkey, $thirdname, HBOOLN, 
+						"B_TEST", HYES),
 				"Setting to '%d'", HYES);
 			ShowResults($log, 1,0,"cfmgtatt(Boolean)", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HBOOLN, "B_TEST",
-							$val, $inlen, $outlen),
-				"Attribute is %f (%d -> %d)", $val, $inlen, $outlen);
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HBOOLN, 
+						"B_TEST", $val),
+				"Attribute is %f", $val);
 
 			$inlen = 0;
 			ShowResults($log, 1,0,"cfmsatt(Date)", 
@@ -217,36 +218,36 @@ my			$inlen = 0;
 				"Setting to '$$'");
 			$freq = HDATE;
 			ShowResults($log, 1,0,"cfmgtatt(Date)", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, $freq, "D_TEST", 
-							$val, $inlen, $outlen),
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, $freq, 
+						"D_TEST", $val),
 				"Attribute is %d (%d)", $val, $freq);
 
 			$inlen = 0;
 			ShowResults($log, 1,0,"cfmsatt(NameList)", 
-				FameHLI::API::Cfmsatt($dbkey, $thirdname, HNAMEL, "L_TEST", 
-					"A,Name"),
+				FameHLI::API::Cfmsatt($dbkey, $thirdname, HNAMEL, 
+					"L_TEST", "A,Name"),
 				"Setting to 'A,Name'");
 			ShowResults($log, 1,0,"cfmgtatt(NameList)", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HNAMEL, "L_TEST", 
-							$val, $inlen, $outlen),
-				"Attribute is %s (%d -> %d)", $val, $inlen, $outlen);
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HNAMEL, 
+					"L_TEST", $val),
+				"Attribute is %s", $val);
 
 			$inlen = 0;
 			ShowResults($log, 1,0,"cfmsatt(Numeric)", 
 				FameHLI::API::Cfmsatt($dbkey, $thirdname, HNUMRC, "N_TEST", $$),
 				"Setting to '$$'");
 			ShowResults($log, 1,0,"cfmgtatt(Numeric)", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HNUMRC, "N_TEST", 
-							$val, $inlen, $outlen),
-				"Attribute is %f (%d -> %d)", $val, $inlen, $outlen);
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HNUMRC, 
+						"N_TEST", $val),
+				"Attribute is %f", $val);
 
 			$inlen = 0;
 			ShowResults($log, 1,0,"cfmsatt(Precision)", 
 				FameHLI::API::Cfmsatt($dbkey, $thirdname, HPRECN, "P_TEST", $$),
 				"Setting to '$$'");
 			ShowResults($log, 1,0,"cfmgtatt(Precision)", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HPRECN, "P_TEST", 
-							$val, $inlen, $outlen),
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HPRECN, 
+						"P_TEST", $val),
 				"Attribute is %f", $val);
 
 			$inlen = 0;
@@ -255,15 +256,9 @@ my			$inlen = 0;
 					"A String"),
 				"Setting to 'A String'");
 			ShowResults($log, 1,0,"cfmgtatt", 
-				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HSTRNG, "S_TEST", 
-							$val, $inlen, $outlen),
-				"Attribute is %s (%d -> %d)", $val, $inlen, $outlen);
-
-			ShowResults($log, 1,0,"cfmlatt", 
-				FameHLI::API::Cfmlatt($dbkey, $thirdname, HSTRNG, "S_TEST",
-							$attlen),
-				"Attribute is %d characters long", $attlen);
-
+				FameHLI::API::Cfmgtatt($dbkey, $thirdname, HSTRNG, 
+					"S_TEST", $val),
+				"Attribute is %s", $val);
 
 ;#		------------------------------------------------------------
 ;#		Let's see what we have done...
@@ -292,13 +287,15 @@ my			$inlen = 0;
 ;#		------------------------------------------------------------
 			print("then... ($thirdname, $aliases)\n");
 			$inlen = 0;
+
+			ShowResults($log, 0,0,"cfmlali", 999);	# depricated
+
 			ShowResults($log, 1,0,"cfmsali", 
 				FameHLI::API::Cfmsali($dbkey, $thirdname, $aliases),
 				"Set '%s' with alias string '%s'", $thirdname, $aliases);
 			ShowResults($log, 1,0,"cfmgtali", 
-				FameHLI::API::Cfmgtali($dbkey, $thirdname, $str, $inlen, $outlen),
-				"Alias for '$thirdname' is now '%s' (%d -> %d)", 
-					$str, $inlen, $outlen);
+				FameHLI::API::Cfmgtali($dbkey, $thirdname, $str),
+				"Alias for '$thirdname' is now '%s'", $str);
 
 			ShowResults($log, 1,0,"cfmgnam", 
 				FameHLI::API::Cfmgnam($dbkey, "alias1", $str),
@@ -310,12 +307,9 @@ my			$inlen = 0;
 			ShowResults($log, 1,0,"cfmgnam", 
 				FameHLI::API::Cfmgnam($dbkey, "alias1", $str),
 				"Realname of 'alias1' is '%s'", $str);
-			ShowResults($log, 1,0,"cfmlali", 
-				FameHLI::API::Cfmlali($dbkey, $thirdname, $len),
-				"Alias for '%s' is %d chars long", $thirdname, $len);
 
-			ShowResults($log, 0,0,"cfmlsts", 999);	# Tested in 13.
-			ShowResults($log, 0,0,"cfmnlen", 999);	# Tested in 12.
+			ShowResults($log, 0,0,"cfmlsts", 999);	# depricated
+			ShowResults($log, 0,0,"cfmnlen", 999);	# depricated
 
 ;#		------------------------------------------------------------
 my			$testvar = "STRLEN_TEST";

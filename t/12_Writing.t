@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..22\n"; }
+BEGIN { $| = 1; print "1..20\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -159,13 +159,7 @@ my		$cnt = $#testdata;
 			Cfmnwob($dbkey, $wr_nml_test, HSCALA, 0, HNAMEL));
 		ShowResults($log, 1,0,"cfmwtnl", 
 			Cfmwtnl($dbkey, $wr_nml_test, HNLALL, $tmp));
-		ShowResults($log, 1,0,"cfmnlen", 
-			Cfmnlen($dbkey, $wr_nml_test, HNLALL, $len),
-			"Namelist is $len chars long.");
-		ShowResults($log, 1,0,"Check values",
-			$len == (length($tmp)+2) ? HSUCC : -1,
-			"Lengths match");
-
+		ShowResults($log, 0,0,"cfmnlen", 999);	# depricated
 		ShowResults($log, 0,0,"cfmwrmt", 999); # not implemented yet
 
 ;#		------------------------------------------------------------
