@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: API.xs,v 1.2 2001/09/10 23:14:20 datadev Exp $
+**	Rev:	$Id: API.xs,v 1.4 2002/05/03 19:40:24 datadev Exp $
 **	Use:	Access to  FAME functions in other platforms.
 ******************************************************************************
 **	This library is an abstraction layer for FAME C-HLI functions
@@ -2458,27 +2458,95 @@ int		ii = 0;
 #/		returned as the first element of an array (which is consistent with
 #/		the Fame C-HLI documentation).
 #/		----------------------------------------------------------------------
+
+#/		----------------------------------------------------------------------
+#/		F I X   T H I S
+#/		F I X   T H I S
+#/		Missing values need to be set as references to strings.
+#/		F I X   T H I S
+#/		F I X   T H I S
+#/      ----------------------------------------------------------------------
+
 			if (freq == HUNDFX) {
 				switch(type) {
 				  case HNUMRC:
-#/					printf("You should see HNUMRC '%s'%g'\n", objnam, ((float *)vptr)[0]);
-					sv = newSVnv(((float *)vptr)[0]);
+					if (fptr[0] == FNUMNA) {
+						sv = newSVpv("NA", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (fptr[0] == FNUMNC) {
+						sv = newSVpv("NC", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (fptr[0] == FNUMND) {
+						sv = newSVpv("ND", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else {
+#/	fprintf(stderr, "\n\t'%s'%g'\n", objnam, fptr[0]);
+						sv = newSVnv(fptr[0]);
+						av_push(datarray, sv);
+					}
 					break;
+
 				  case HBOOLN:
-#/					printf("You should see HBOOLN '%d'\n", ((int *)vptr)[0]);
-					sv = newSViv(((int *)vptr)[0]);
+					if (iptr[0] == FBOONA) {
+						sv = newSVpv("NA", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (iptr[0] == FBOONC) {
+						sv = newSVpv("NC", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (iptr[0] == FBOOND) {
+						sv = newSVpv("ND", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else {
+#/	fprintf(stderr, "\n\t'%d'\n", iptr[0]);
+						sv = newSViv(iptr[0]);
+						av_push(datarray, sv);
+					}
 					break;
 				  case HPRECN:
-#/					printf("You should see HPRECN '%g'\n", ((double *)vptr)[0]);
-					sv = newSVnv(((double *)vptr)[0]);
+					if (dptr[0] == FPRCNA) {
+						sv = newSVpv("NA", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (dptr[0] == FPRCNC) {
+						sv = newSVpv("NC", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (dptr[0] == FPRCND) {
+						sv = newSVpv("ND", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else {
+#/	fprintf(stderr, "\n\t'%g'\n", dptr[0]);
+						sv = newSVnv(dptr[0]);
+						av_push(datarray, sv);
+					}
 					break;
 				  default:
-#/					printf("You should see DATE for '%d'\n", ((int *)vptr)[0]);
-					sv = newSViv(((int *)vptr)[0]);
+					if (iptr[0] == FDATNA) {
+						sv = newSVpv("NA", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (iptr[0] == FDATNC) {
+						sv = newSVpv("NC", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else if (iptr[0] == FDATND) {
+						sv = newSVpv("ND", 0);
+						sv2 = newRV_noinc(sv);
+						av_push(datarray, sv2);
+					} else {
+#/	fprintf("\n\t'%d'\n", iptr[0]);
+						sv = newSViv(iptr[0]);
+						av_push(datarray, sv);
+					}
 					break;
 				}
-				av_push(datarray, sv);
-				
 
 #/		----------------------------------------------------------------------
 #/			Otherwise this is an array so set all the values.

@@ -614,7 +614,7 @@ use AutoLoader;
 	HWRITE
 	HYES
 );
-$VERSION = '1.100';
+$VERSION = '1.101';
 
 sub AUTOLOAD {
     # This AUTOLOAD is used to 'autoload' constants from the constant()

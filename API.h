@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: API.h,v 1.1 2001/04/19 04:33:17 datadev Exp $
+**	Rev:	$Id: API.h,v 1.2 2002/02/13 16:42:35 datadev Exp $
 **	Use:	Access to  FAME functions in other platforms.
 *****************************************************************************/
 

@@ -1,5 +1,19 @@
 Revision history for Perl extension FameHLI.
 
+1.101 Fri May 3, 2002
+
+    FameHLI::API
+    - Modified Cfmrrng to return "proper" missing values instead
+      of the Fame internal representation.  For instance, a missing
+      NUMERIC would be around 1.7E+38.  It now returns a reference
+      to a string "NA", "NC" or "ND".
+    FameHLI::API/tests
+    - Added 6 tests to 12_Writing and 13_Reading to ensure the
+      aforementioned missing values are being handled properly for
+      NUMERIC.  2 each (writing and reading) for each of the three
+      missing data types.  I did not put in tests for the other 
+      data types but may, someday...
+
 1.100 Tue Feb 12, 2002
 
     Most of the changes in this release came from Daniel Martin of

@@ -124,7 +124,7 @@ require AutoLoader;
 @EXPORT = qw(
 );
 
-$VERSION = '1.100';
+$VERSION = '1.101';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -140,7 +140,7 @@ __END__
 =head1 COPYRIGHT
 
 Copyright (c) 2001, 2002 Dave Oberholtzer (daveo@obernet.com)
-and Measurisk.  All rights reserved.
+and Measurisk, LLC.  All rights reserved.
 This program is free software; you can
 redistribute it and/or modify it under the same terms as Perl itself.
 
@@ -162,6 +162,11 @@ My sense of humor is a bit dry.  As this moves up the revision ladder, I
 will try to tone it down a bit.
 
 =head1 CHANGES
+
+The 1.101 release includes a 'bug' fix for "missing" scalar values.  
+Instead of returning a reference to "NA", "NC" or "ND", Cfmrrng 
+returned the actual internal representation of NA, NC or ND (which 
+looks like a number around 1.7E+38).
 
 The 1.1 release includes changes sent in by Daniel Martin of Fame
 Information Services which clean up some initialization issues as
@@ -543,6 +548,12 @@ There are a few areas which still need improvement.
 These improvements will be in later releases.  (Order
 will be dependent on demand.)
 
+=head2 ActiveState Perl Package
+
+I am looking for a volunteer to help package the FameHLI into
+an ActiveState PPM package.  This will help those in the 
+Windows world who don't have a handy copy of VC++.
+
 =head2 Error Checking / Handling
 
 In this early release of FameHLI::API there is not a lot of 
@@ -597,6 +608,16 @@ all have either valid values or references.
 
 in this way, you can actually see the "NA", "NC" or "ND"
 string and _know_ it is a missing value. [Done]
+
+=item *
+
+Decide if anybody really cares about the cfmis[bdnps]m or 
+cfms[bdnps]m functions.  Checking to see if a value is missing
+is achieved simply by seeing if it is a reference, no matter
+what data type it is.  I would actually write these functions
+as that type of implementation, but unless someone really 
+wants them, I do have better things to do.  Could somebody
+give me some feedback on this? [Not done]
 
 =item *
 

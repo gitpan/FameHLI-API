@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: EXT.h,v 1.1 2002/02/12 18:42:09 datadev Exp datadev $
+**	Rev:	$Id: EXT.h,v 1.2 2002/02/13 16:49:52 datadev Exp $
 **	Use:	Access to  FAME functions in other platforms.
 *****************************************************************************/
 

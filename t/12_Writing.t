@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..22\n"; }
+BEGIN { $| = 1; print "1..28\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -44,6 +44,9 @@ my		$boolname = "testbool";
 
 my		$wr_num_test	=	"wr_num_test";
 my		$wr_nms_test	=	"wr_nms_test";
+my		$wr_nms_testNA	=	"wr_nms_testNA";
+my		$wr_nms_testNC	=	"wr_nms_testNC";
+my		$wr_nms_testND	=	"wr_nms_testND";
 my		$wr_nml_test	=	"wr_nml_test";
 my		$wr_boo_test	=	"wr_boo_test";
 my		$wr_str_test	=	"wr_str_test";
@@ -87,7 +90,13 @@ my		$numobs	=	-1;
 ;#		Numeric
 ;#		--------------------
 my		@testdata = NumData();
+my		@NAdata = NAData();
+my		@NCdata = NCData();
+my		@NDdata = NDData();
 my		$tdref = \@testdata;
+my		$NAref = \@NAdata;
+my		$NCref = \@NCdata;
+my		$NDref = \@NDdata;
 my		$ndata;
 
 my		$cnt = $#testdata;
@@ -148,6 +157,24 @@ my		$cnt = $#testdata;
 			$wr_nms_test);
 		ShowResults($log, 1,0,"cfmwrng", 
 			Cfmwrng($dbkey, $wr_nms_test, $rng, $tdref, 0, $NoMissTbl));
+
+		ShowResults($log, 1,0,"cfmnwob(nmsNA)", 
+			Cfmnwob($dbkey, $wr_nms_testNA, HSCALA, 0, HNUMRC),
+			$wr_nms_testNA);
+		ShowResults($log, 1,0,"cfmwrng", 
+			Cfmwrng($dbkey, $wr_nms_testNA, $rng, $NAref, 0, $NoMissTbl));
+
+		ShowResults($log, 1,0,"cfmnwob(nmsNC)", 
+			Cfmnwob($dbkey, $wr_nms_testNC, HSCALA, 0, HNUMRC),
+			$wr_nms_testNC);
+		ShowResults($log, 1,0,"cfmwrng", 
+			Cfmwrng($dbkey, $wr_nms_testNC, $rng, $NCref, 0, $NoMissTbl));
+
+		ShowResults($log, 1,0,"cfmnwob(nmsND)", 
+			Cfmnwob($dbkey, $wr_nms_testND, HSCALA, 0, HNUMRC),
+			$wr_nms_testND);
+		ShowResults($log, 1,0,"cfmwrng", 
+			Cfmwrng($dbkey, $wr_nms_testND, $rng, $NDref, 0, $NoMissTbl));
 
 ;#		------------------------------------------------------------
 ;#		Write a string scalar

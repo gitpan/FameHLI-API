@@ -11,7 +11,7 @@
 
 ######################### We start with some black magic to print on failure.
 
-BEGIN { $| = 1; print "1..24\n"; }
+BEGIN { $| = 1; print "1..30\n"; }
 END {print "not ok 1\n" unless $loaded;}
 $loaded = 1;
 print "ok 1\n";
@@ -38,6 +38,9 @@ my		$TestWriteCount	=	31;
 ;#		------------------------------------------------------------
 my		$wr_num_test	=	"wr_num_test";
 my		$wr_nms_test	=	"wr_nms_test";
+my		$wr_nms_testNA	=	"wr_nms_testNA";
+my		$wr_nms_testNC	=	"wr_nms_testNC";
+my		$wr_nms_testND	=	"wr_nms_testND";
 my		$wr_nml_test	=	"wr_nml_test";
 my		$wr_boo_test	=	"wr_boo_test";
 my		$wr_str_test	=	"wr_str_test";
@@ -88,6 +91,9 @@ my		$rng;
 my		$ndata;
 my		$xdata;
 my		@testdata = NumData();
+my		@NAdata = NAData();
+my		@NCdata = NCData();
+my		@NDdata = NDData();
 my		@datetest = DateData();
 
 		ShowResults($log, 1,0,"cfmfame", 
@@ -100,6 +106,18 @@ my		@datetest = DateData();
 		ShowResults($log, 1,0,"cfmrrng(nms)", 
 			Cfmrrng($dbkey, $wr_nms_test, $rng, $xdata, HNTMIS, $NoMissTbl));
 		CompNumValues($log, \@datetest, $xdata, 1);
+
+		ShowResults($log, 1,0,"cfmrrng(nmsNA)", 
+			Cfmrrng($dbkey, $wr_nms_testNA, $rng, $xdata, HNTMIS, $NoMissTbl));
+		CompNumValues($log, \@NAdata, $xdata, 1);
+
+		ShowResults($log, 1,0,"cfmrrng(nmsNC)", 
+			Cfmrrng($dbkey, $wr_nms_testNC, $rng, $xdata, HNTMIS, $NoMissTbl));
+		CompNumValues($log, \@NCdata, $xdata, 1);
+
+		ShowResults($log, 1,0,"cfmrrng(nmsND)", 
+			Cfmrrng($dbkey, $wr_nms_testND, $rng, $xdata, HNTMIS, $NoMissTbl));
+		CompNumValues($log, \@NDdata, $xdata, 1);
 
 		ShowResults($log, 1,0,"cfmrrng(prc)", 
 			Cfmrrng($dbkey, $wr_prc_test, $rng, $pdata, HNTMIS, $NoMissTbl));
