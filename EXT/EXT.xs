@@ -921,6 +921,7 @@ char	*ptr;
 MODULE = FameHLI::API::EXT		PACKAGE = FameHLI::API::EXT		PREFIX = perl_
 
 BOOT:
+		cfmini(&status);
 		status = 0;
 
 
@@ -940,11 +941,11 @@ int
 perl_BootstrapEXT()
 
 	PREINIT:
-int		rc;
+int		rc	=	HSUCC;
 
 	CODE:
-		fprintf(stderr, "\n<<<<<<<<<<<<<<<<<<XXXXX>>>>>>>>>>>>>>>>>>>>\n\n");
-		cfmini(&rc);
+#/		cfmini(&rc);
+		printf("BootstrapEXT is deprecated\n");
 		RETVAL = rc;
 
 	OUTPUT:

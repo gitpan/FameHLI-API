@@ -4,25 +4,24 @@
 #			Copyright (c)2001, David Oberholtzer and Measurisk.
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Editor:	vi with tabstops=4
 #=============================================================================
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
 BEGIN { $| = 1; print "1..23\n"; }
 END {print "not ok 1\n" unless $loaded;}
-use FameHLI::API;
-use	FameHLI::API::HLI ':all';
 $loaded = 1;
 print "ok 1\n";
 $| = 1;
-require("./t/subs.pm");
 
 ######################### End of black magic.
+
+use		FameHLI::API ':all';
+use		FameHLI::API::HLI ':all';
+require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -45,7 +44,7 @@ my		$wr_prc_test	=	"wr_prc_test";
 my		$wr_dat_test	=	"wr_dat_test";
 
 my		$log = StartTest("13_Reading");
-		ShowResults($log, 1,0,"cfmini", FameHLI::API::Cfmini());
+		ShowResults($log, 1,0,"cfmini", Cfmini());
 
 ;#		------------------------------------------------------------
 my		$syear	=	1999;
@@ -56,8 +55,7 @@ my		$numobs	=	-1;
 my		$rng;
 
 		ShowResults($log, 1,0,"cfmsfis",
-			FameHLI::API::Cfmsfis(HBUSNS, $syear, $sprd,
-						$eyear, $eprd, $rng, $numobs),
+			Cfmsfis(HBUSNS, $syear, $sprd, $eyear, $eprd, $rng, $numobs),
 			"sy:%s, sp:%s, ey:%s, ep:%s, n:%s",
 			$syear, $sprd, $eyear, $eprd, $numobs);
 
@@ -66,29 +64,26 @@ my		$rng;
 		$eprd	=	-1;
 
 		ShowResults($log, 1,0,"cfmsrng",
-			FameHLI::API::Cfmsrng(HBUSNS, $syear, $sprd,
-						$eyear, $eprd, $rng, $numobs),
+			Cfmsrng(HBUSNS, $syear, $sprd, $eyear, $eprd, $rng, $numobs),
 			"sy:%s, sp:%s, ey:%s, ep:%s, n:%s", 
 			$syear, $sprd, $eyear, $eprd, $numobs);
 
 		ShowResults($log, 1,0,"cfmopdb(u)", 
-			FameHLI::API::Cfmopdb($dbkey, "testdb", HUMODE));
+			Cfmopdb($dbkey, "testdb", HUMODE));
 
 ;#		------------------------------------------------------------
 		printf($log "--> Reading Data\n");
 ;#		------------------------------------------------------------
-		ShowResults($log, 0,0,"cfmrdfa", 999);
+		ShowResults($log, 0,0,"cfmrdfa", 999);	# not implemented yet
 
 my		$len	=	0;
 
 		ShowResults($log, 1,0,"cfmgtnl", 
-			FameHLI::API::Cfmgtnl($dbkey, $wr_nml_test, 
-				HNLALL, $str, 100, $len), 
+			Cfmgtnl($dbkey, $wr_nml_test, HNLALL, $str, 100, $len), 
 				"All: '%s'", $str);
 
 		ShowResults($log, 1,0,"cfmgtnl", 
-			FameHLI::API::Cfmgtnl($dbkey, $wr_nml_test, 
-				2, $str, 100, $len), 
+			Cfmgtnl($dbkey, $wr_nml_test, 2, $str, 100, $len), 
 				"2nd: '%s'", $str);
 
 my		$ndata;
@@ -96,45 +91,41 @@ my		@testdata = NumData();
 my		@datetest = DateData();
 
 		ShowResults($log, 1,0,"cfmfame", 
-			FameHLI::API::Cfmfame("<freq b; date 1999m1> junk = uniform"));
+			Cfmfame("<freq b; date 1999m1> junk = uniform"));
 
 		ShowResults($log, 1,0,"cfmrrng(num)", 
-			FameHLI::API::Cfmrrng($dbkey, $wr_num_test, $rng, $ndata, 
-				HNTMIS, $NoMissTbl));
+			Cfmrrng($dbkey, $wr_num_test, $rng, $ndata, HNTMIS, $NoMissTbl));
 		CompNumValues($log, \@testdata, $ndata, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmrrng(prc)", 
-			FameHLI::API::Cfmrrng($dbkey, $wr_prc_test, $rng, $pdata, 
-				HNTMIS, $NoMissTbl));
+			Cfmrrng($dbkey, $wr_prc_test, $rng, $pdata, HNTMIS, $NoMissTbl));
 		CompNumValues($log, \@testdata, $pdata, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmrrng(dat)", 
-			FameHLI::API::Cfmrrng($dbkey, $wr_dat_test, $rng, $ddata, 
-				HNTMIS, $NoMissTbl));
+			Cfmrrng($dbkey, $wr_dat_test, $rng, $ddata, HNTMIS, $NoMissTbl));
 		CompNumValues($log, \@datetest, $ddata, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmrrng(bool)", 
-			FameHLI::API::Cfmrrng($dbkey, $wr_boo_test, $rng, $bdata, 
-				HNTMIS, $NoMissTbl));
+			Cfmrrng($dbkey, $wr_boo_test, $rng, $bdata, HNTMIS, $NoMissTbl));
 		CompBoolValues($log, \@testdata, $bdata, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmgtsts(strs)", 
-			FameHLI::API::Cfmgtsts($dbkey, $wr_str_test, $rng, $sdata));
+			Cfmgtsts($dbkey, $wr_str_test, $rng, $sdata));
 
 		ShowResults($log, 1,0,"cfmlsts",
-			FameHLI::API::Cfmlsts($dbkey, $wr_str_test, $rng, $lenarray),
+			Cfmlsts($dbkey, $wr_str_test, $rng, $lenarray),
 			"Array is: '%s'\n", join(", ", @{$lenarray}));
 
 		CompStrValues($log, \@datetest, $sdata, $lenarray, $TestWriteCount);
 
 		ShowResults($log, 1,0,"cfmgtstr(str)", 
-			FameHLI::API::Cfmgtstr($dbkey, $wr_str_test, $rng, $str), $str);
+			Cfmgtstr($dbkey, $wr_str_test, $rng, $str), $str);
 		ShowResults($log, 1,1,"Comp String", $str eq $datetest[0],
 			"Compare '%s' with '%s'\n", $str, $datetest[0]);
 
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmcldb", FameHLI::API::Cfmcldb($dbkey));
-		ShowResults($log, 1,0,"cfmfin", FameHLI::API::Cfmfin());
+		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
+		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }
 
 

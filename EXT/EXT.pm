@@ -18,10 +18,28 @@ require AutoLoader;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(
-	
+our	%EXPORT_TAGS = ( 'all'	=>	[ qw(
+		FormatDate
+		AccessModeDesc
+		BasisDesc
+		BiWeekdayDesc
+		ClassDesc
+		ErrDesc
+		FreqDesc
+		FYLabelDesc
+		MonthsDesc
+		ObservedDesc
+		OldFYEndDesc
+		TypeDesc
+		WeekdayDesc
+	) ] );
+
+our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+
+our	@EXPORT = qw(
 );
-$VERSION = '0.901';
+	
+$VERSION = '0.902';
 
 bootstrap FameHLI::API::EXT $VERSION;
 

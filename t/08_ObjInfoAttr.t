@@ -4,26 +4,32 @@
 #			Copyright (c)2001, David Oberholtzer and Measurisk.
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Editor:	vi with tabstops=4
+#=============================================================================
+#	NOTE:	This is the only script where I didn't import ':all' of the
+#			functions.  this way you can see how to call them in the
+#			fully qualified syntax.  If you are writing a module that
+#			you want to share with others, you should use this syntax.
+#			If you are writing a script that few will see then you can
+#			consider importing everything.
 #=============================================================================
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
-BEGIN { $| = 1; print "1..59\n"; }
+BEGIN { $| = 1; print "1..60\n"; }
 END {print "not ok 1\n" unless $loaded;}
-use FameHLI::API;
-use	FameHLI::API::EXT;
-use	FameHLI::API::HLI ':all';
 $loaded = 1;
 print "ok 1\n";
 $| = 1;
-require("./t/subs.pm");
 
 ######################### End of black magic.
+
+use		FameHLI::API;
+use		FameHLI::API::EXT;
+use		FameHLI::API::HLI ':all';
+require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -131,7 +137,6 @@ my			$deslen;
 			$newdesc = "A new description string";
 			$newdoc = "A new documentation string";
 
-			ShowResults($log, 0,0,"cfmdlen", 999); 	# no point, really
 			ShowResults($log, 1,0,"cfmsdes", 
 				FameHLI::API::Cfmsdes($dbkey, $thirdname, $newdesc));
 			ShowResults($log, 1,0,"cfmsdoc",
@@ -155,7 +160,7 @@ my			$deslen;
 				FameHLI::API::Cfmwtnl($dbkey, "BOOLEAN_ATTRIBUTE_NAMES",
 					HNLALL, "B_TEST"));
 
-			ShowResults($log, 0,0,"cfmncnt", 
+			ShowResults($log, 1,0,"cfmncnt", 
 				FameHLI::API::Cfmncnt($dbkey, "BOOLEAN_ATTRIBUTE_NAMES", $len),
 				"BOOLEAN_ATTRIBUTE_NAMES is '%d' long.", $len);
 
@@ -254,7 +259,10 @@ my			$inlen = 0;
 							$val, $inlen, $outlen),
 				"Attribute is %s (%d -> %d)", $val, $inlen, $outlen);
 
-			ShowResults($log, 0,0,"cfmlatt", 999);	# no point, really...
+			ShowResults($log, 1,0,"cfmlatt", 
+				FameHLI::API::Cfmlatt($dbkey, $thirdname, HSTRNG, "S_TEST",
+							$attlen),
+				"Attribute is %d characters long", $attlen);
 
 
 ;#		------------------------------------------------------------
@@ -284,30 +292,30 @@ my			$inlen = 0;
 ;#		------------------------------------------------------------
 			print("then... ($thirdname, $aliases)\n");
 			$inlen = 0;
-			ShowResults($log, 0,0,"cfmsali", 
+			ShowResults($log, 1,0,"cfmsali", 
 				FameHLI::API::Cfmsali($dbkey, $thirdname, $aliases),
 				"Set '%s' with alias string '%s'", $thirdname, $aliases);
-			ShowResults($log, 0,0,"cfmgtali", 
+			ShowResults($log, 1,0,"cfmgtali", 
 				FameHLI::API::Cfmgtali($dbkey, $thirdname, $str, $inlen, $outlen),
 				"Alias for '$thirdname' is now '%s' (%d -> %d)", 
 					$str, $inlen, $outlen);
 
-			ShowResults($log, 0,0,"cfmgnam", 
+			ShowResults($log, 1,0,"cfmgnam", 
 				FameHLI::API::Cfmgnam($dbkey, "alias1", $str),
 				"Realname of 'alias1' is '%s'", $str);
 			ShowResults($log, 0,HNOOBJ,"cfmgnam(err)", 
 				FameHLI::API::Cfmgnam($dbkey, "albakirky", $str),
 				"Realname of 'albakirky' is '%s'", $str);
 
-			ShowResults($log, 0,0,"cfmgnam", 
+			ShowResults($log, 1,0,"cfmgnam", 
 				FameHLI::API::Cfmgnam($dbkey, "alias1", $str),
 				"Realname of 'alias1' is '%s'", $str);
-			ShowResults($log, 0,0,"cfmlali", 
+			ShowResults($log, 1,0,"cfmlali", 
 				FameHLI::API::Cfmlali($dbkey, $thirdname, $len),
 				"Alias for '%s' is %d chars long", $thirdname, $len);
 
 			ShowResults($log, 0,0,"cfmlsts", 999);	# Tested in 13.
-			ShowResults($log, 0,0,"cfmnlen", 999);
+			ShowResults($log, 0,0,"cfmnlen", 999);	# Tested in 12.
 
 ;#		------------------------------------------------------------
 my			$testvar = "STRLEN_TEST";
@@ -319,7 +327,7 @@ my			$testlen;
 				FameHLI::API::Cfmgsln($dbkey, $testvar, $testlen),
 				"Length of '$testvar' is $testlen.");
 			$testlen = 42;
-			ShowResults($log, 0,0,"cfmssln", 
+			ShowResults($log, 1,0,"cfmssln", 
 				FameHLI::API::Cfmssln($dbkey, $testvar, $testlen));
 			ShowResults($log, 1,0,"cfmgsln", 
 				FameHLI::API::Cfmgsln($dbkey, $testvar, $testlen),
@@ -331,21 +339,21 @@ my			$testlen;
 				"for $thirdname: <$assoc>");
 			ShowResults($log, 1,1,"cfmgtaso(chk str)", 
 				$assoc eq "{}", "'$assoc' eq '{}'");
-			ShowResults($log, 0,0,"cfmlaso", 
+			ShowResults($log, 1,0,"cfmlaso", 
 				FameHLI::API::Cfmlaso($dbkey, $thirdname, $len),
 				"'%s' is %d long.", $assoc, $len);
 			ShowResults($log, 1,1,"cfmgtaso(chk len)", 
 				(length($assoc) == $len),
 				"'%d' eq '%d'", length($assoc), $len);
 
-			ShowResults($log, 0,0,"cfmsaso", 
+			ShowResults($log, 1,0,"cfmsaso", 
 				FameHLI::API::Cfmsaso($dbkey, $thirdname, "N_TEST"));
 			ShowResults($log, 1,0,"cfmgtaso", 
 				FameHLI::API::Cfmgtaso($dbkey, $thirdname, $assoc),
 				"for $thirdname: <$assoc>");
 			ShowResults($log, 1,1,"cfmgtaso(chk str)", 
 				$assoc eq "{N_TEST}", "'$assoc' eq '{N_TEST}'");
-			ShowResults($log, 0,0,"cfmlaso", 
+			ShowResults($log, 1,0,"cfmlaso", 
 				FameHLI::API::Cfmlaso($dbkey, $thirdname, $len),
 				"'%s' is %d long.", $assoc, $len);
 			ShowResults($log, 1,1,"cfmgtaso(chk len)", 

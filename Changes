@@ -4,7 +4,7 @@ Revision history for Perl extension FameHLI.
     - original version written using SWIG
 
 0.2   Thu Oct  5 13:23:52 2000
-	- original XS version; created by h2xs 1.19
+    - original XS version; created by h2xs 1.19
 
 0.2   Various times through 2000
     - enhancing performance and adding more fucntions
@@ -14,3 +14,36 @@ Revision history for Perl extension FameHLI.
 
 0.901 Wed Apr 18, 2001
     - First post to CPAN
+
+0.902 Thu Apr 19, 2001
+
+    FameHLI::API
+    - Removed a quirky internal function which wasn't really needed
+    - Added in several of the "how long is that" string function for
+      completeness.  They aren't really needed because if the caller
+      of the string retrieval function doesn't specify a length (or
+      gives a length of '0'), I just figure it out for them.
+    - Found 2 possible bugs in the C-HLI: cfmfame prints out an error
+      message to STDERR or STDOUT upon an error condition and 
+      cfmlerr returns an error length of '0' for that same condition.
+    - Converted several more functions from standard 'C' data type
+      arguments to SV*'s.  It seems to confuse the compiler less.
+    - Added the ':all' EXPORT_TAG so everything could be imported.
+    - Added the comments to API.pm supporting the added tests
+      noted below.
+
+    FameHLI::API/tests
+    - Added tests for other functions which are defined but were not
+      tested in the previous release.
+    - Changed all but test 08 to import all functions and #defines
+      so I could clear out some noisey text in those files.  It
+      makes it easier for a C-HLI programmer to see what is going
+      on.  08 has been left with fully qualified names for 
+      instructional purposes.
+
+    FameHLI::API::EXT
+    - It appears that the EXT module runs in a different space from
+      the API module.  I would get Not Initialized errors from CFM
+      calls in the EXT module if I didn't call cfmini there as well
+      in the BOOT code.
+    - Added the ':all' EXPORT_TAG so everything could be imported.

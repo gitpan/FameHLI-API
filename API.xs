@@ -4,7 +4,7 @@
 **	Author:	David Oberholtzer, (daveo@obernet.com)
 **			Copyright (c)2001, David Oberholtzer and Measurisk.
 **	Date:	2001/03/23
-**	Rev:	$Id: API.xs,v 1.1 2001/02/28 01:02:39 datadev Exp datadev $
+**	Rev:	$Id: API.xs,v 1.1 2001/04/19 04:33:17 datadev Exp datadev $
 **	Use:	Access to  FAME functions in other platforms.
 ******************************************************************************
 **	This library is an abstraction layer for FAME C-HLI functions
@@ -36,28 +36,14 @@
 //***************************************************************************
 //***************************************************************************
 static	int		status = 0;
-static	char	errBuff[BIGBUF];
-static	int		errBuffLen = -1;
 static	int		xx_cnt = 0;
 
 
 //***************************************************************************
 //***************************************************************************
-//		E x t e n s i o n   F u n c t i o n s
+//		E x t e n s i o n   F u n c t i o n ( s )
 //***************************************************************************
 //***************************************************************************
-
-//===========================================================================
-//		S E T   E R R O R   B U F F E R
-//===========================================================================
-void	SetErrBuff()
-{
-		if (status == HFAMER) {
-			cfmferr(&status, errBuff);
-			errBuffLen = strlen(errBuff);
-			status = HFAMER;
-		}
-}
 
 //===========================================================================
 //		N E W   S T R I N G
@@ -184,10 +170,6 @@ char	*optval
 
 	CODE:
 		cfmsopt(&status, optname, optval);
-		if (status == HFAMER) {
-			printf("There was an error %d in Cfmsopt.\n", status);
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -251,9 +233,7 @@ SV		*sv;
 		numobs = SvIV(sv_numobs);
 
 		cfmsrng(&status, freq, &syear, &sprd, &eyear, &eprd, rng, &numobs);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_syear, syear);
 			sv_setiv(sv_sprd, sprd);
 			sv_setiv(sv_eyear, eyear);
@@ -329,9 +309,7 @@ SV		*sv;
 
 		cfmsfis(&status, freq, &syear, &sprd, &eyear, &eprd,
 				rng, &numobs, fmonth, flabel);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_syear, syear);
 			sv_setiv(sv_sprd, sprd);
 			sv_setiv(sv_eyear, eyear);
@@ -378,9 +356,7 @@ int		connkey;
 	CODE:
 		cfmopcn(&status, &connkey, service, hostname, username, password);
 		
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_connkey, connkey);
 		}
 		RETVAL = status;
@@ -403,9 +379,7 @@ int		connkey;
 
 	CODE:
 		cfmgcid(&status, dbkey, &connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_connkey, connkey);
 		}
 		RETVAL = status;
@@ -424,9 +398,6 @@ int		connkey
 
 	CODE:
 		cfmcmmt(&status, connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -442,9 +413,6 @@ int		connkey
 
 	CODE:
 		cfmabrt(&status, connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -460,9 +428,6 @@ int		connkey
 
 	CODE:
 		cfmclcn(&status, connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -494,9 +459,7 @@ int		key;
 	CODE:
 		strcpy(name, dbname);
 		cfmopdb(&status, &dbkey, name, mode);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_dbkey, dbkey);
 		}
 		RETVAL = status;
@@ -517,9 +480,6 @@ int		key
 
 	CODE:
 		cfmcldb(&status, key);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -536,9 +496,6 @@ int		dbkey
 
 	CODE:
 		cfmpodb(&status, dbkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -554,9 +511,6 @@ int		dbkey
 
 	CODE:
 		cfmrsdb(&status, dbkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -572,9 +526,6 @@ int		dbkey
 
 	CODE:
 		cfmpack(&status, dbkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -596,9 +547,7 @@ int		dbkey;
 
 	CODE:
 		cfmopdc(&status, &dbkey, dbname, mode, connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_dbkey, dbkey);
 		}
 		RETVAL = status;
@@ -625,9 +574,6 @@ char	*desc
 
 	CODE:
 		cfmddes(&status, dbkey, desc);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -643,9 +589,6 @@ char *doc
 
 	CODE:
 		cfmddoc(&status, dbkey, doc);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -696,9 +639,7 @@ int		deslen, doclen, i;
 									&myear, &mmonth, &mday, 
 									desc, doc);
 		}
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_cyear, cyear);
 			sv_setiv(sv_cmonth, cmonth);
 			sv_setiv(sv_cday, cday);
@@ -738,9 +679,7 @@ int		mdate;
 
 	CODE:
 		cfmgdbd(&status, dbkey, freq, &cdate, &mdate);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_cdate, cdate);
 			sv_setiv(sv_mdate, mdate);
 		}
@@ -767,9 +706,7 @@ int		doclen;
 
 	CODE:
 		cfmglen(&status, dbkey, &deslen, &doclen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_deslen, deslen);
 			sv_setiv(sv_doclen, doclen);
 		}
@@ -804,9 +741,6 @@ int		observ
 
 	CODE:
 		cfmnwob(&status, dbkey, objnam, class, freq, type, basis, observ);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -832,9 +766,6 @@ double	growth
 	CODE:
 		cfmalob(&status, dbkey, objnam, class, freq, type, 
 					basis, observ, numobs, numchr, growth);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -854,9 +785,6 @@ char	*tarnam
 
 	CODE:
 		cfmcpob(&status, srckey, tarkey, srcnam, tarnam);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -874,9 +802,6 @@ char *objnam
 
 	CODE:
 		cfmdlob(&status, dbkey, objnam);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -895,9 +820,6 @@ char	*newname
 
 	CODE:
 		cfmrnob(&status, dbkey, oldname, newname);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -918,9 +840,6 @@ int		dblist
 	CODE:
 		cfmasrt(&status, connkey, assert_type, assertion, 
 					perspective, grouping, &dblist);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -963,9 +882,7 @@ int		lprd;
 	CODE:
 		cfmosiz(&status, dbkey, objname, &class, &type, &freq,
 					&fyear, &fprd, &lyear, &lprd);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_class, class);
 			sv_setiv(sv_type, type);
 			sv_setiv(sv_freq, freq);
@@ -1005,9 +922,7 @@ int		mdate;
 
 	CODE:
 		cfmgdat(&status, dbkey, objnam, freq, &cdate, &mdate);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_cdate, cdate);
 			sv_setiv(sv_mdate, mdate);
 		}
@@ -1073,9 +988,7 @@ char	*doc;
 				&fyear, &fprd, &lyear, &lprd, &cyear, &cmonth, &cday,
 				&myear, &mmonth, &mday, desc, doc);
 		}
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_class, class);
 			sv_setiv(sv_type, type);
 			sv_setiv(sv_freq, freq);
@@ -1130,9 +1043,7 @@ int		length;
 
 	CODE:
 		cfmncnt(&status, dbkey, objnam, &length);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_length, length);
 		}
 		RETVAL = status;
@@ -1164,9 +1075,7 @@ int		doclen;
 
 	CODE:
 		cfmdlen(&status, dbkey, objnam, &deslen, &doclen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_deslen, deslen);
 			sv_setiv(sv_doclen, doclen);
 		}
@@ -1191,9 +1100,6 @@ char	*desc
 
 	CODE:
 		cfmsdes(&status, dbkey, objnam, desc);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -1213,9 +1119,6 @@ char	*doc
 
 	CODE:
 		cfmsdoc(&status, dbkey, objnam, doc);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -1235,9 +1138,6 @@ int basis
 
 	CODE:
 		cfmsbas(&status, dbkey, objnam, basis);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 
 	OUTPUT:
@@ -1257,9 +1157,6 @@ int		observ
 
 	CODE:
 		cfmsobs(&status, dbkey, objnam, observ);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1343,9 +1240,7 @@ float	*valptr;
 			worked = (status == HSUCC || status == HTRUNC);
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (worked) {
+		if (worked) {
 			switch(atttype) {
 			  case HNUMRC:
 				sv_setnv(sv_value, f_value);
@@ -1394,9 +1289,6 @@ int		attlen		=	NO_INIT
 
 	CODE:
 		cfmlatt(&status, dbkey, objnam, attyp, attnam, &attlen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1457,9 +1349,6 @@ int		xlen;
 			break;
 		}
 		cfmsatt(&status, dbkey, objnam, atttype, attnam, valptr);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1481,12 +1370,10 @@ char	buff[SMALLBUF];
 
 	CODE:
 		cfmgnam(&status, dbkey, objnam, buff);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmgnam: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			sv_setpv(sv_basnam, buff);
+		} else {
+			printf("Cfmgnam: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
 
@@ -1521,13 +1408,11 @@ char	*buff;
 		outlen = inlen;
 
 		cfmgtali(&status, dbkey, objnam, buff, inlen, &outlen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmgtali: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			sv_setpv(sv_alias, buff);
 			sv_setiv(sv_outlen, outlen);
+		} else {
+			printf("Cfmgtali: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
 
@@ -1554,12 +1439,10 @@ int		len;
 	CODE:
 		sv_setiv(sv_alilen, -1);
 		cfmlali(&status, dbkey, objnam, &len);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmlali: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_alilen, len);
+		} else {
+			printf("Cfmlali: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
 	OUTPUT:
@@ -1583,9 +1466,6 @@ int		x;
 
 	CODE:
 		cfmsali(&status, dbkey, objnam, aliass);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1648,7 +1528,7 @@ int		*lenary;
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
+			status = HBRNG;
 			worked = FALSE;
 		}
 
@@ -1662,8 +1542,6 @@ int		*lenary;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
-		} else {
-			printf("Invalid number of values in RANGE setting\n");
 		}
 
 		lenary = NULL;
@@ -1673,16 +1551,15 @@ int		*lenary;
 			cfmlsts(&status, dbkey, objnam, rng, lenary);
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmlsts: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			for (i=0; i<rlen; i++) {
 				sv = newSViv(lenary[i]);
 				av_push(lenarray, sv);
 			}
+		} else {
+			printf("Cfmlsts: Danger Will Robinson! (%d)\n", status);
 		}
+
 		RETVAL = status;
 
 	OUTPUT:
@@ -1708,14 +1585,13 @@ int		length;
 	CODE:
 		cfmnlen(&status, dbkey, objnam, index, &length);
 		sv_setiv(sv_length, -1);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmnlen: Danger Will Robinson! (%d)\n", status);
+		if (status == HSUCC) {
+			sv_setiv(sv_length, length);
 		} else {
-			sv_setiv(sv_length, -1);
+			printf("Cfmnlen: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 		sv_length
@@ -1738,12 +1614,10 @@ int		length;
 	CODE:
 		sv_setiv(sv_length, -1);
 		cfmgsln(&status, dbkey, objnam, &length);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmgsln: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_length, length);
+		} else {
+			printf("Cfmgsln: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
 	OUTPUT:
@@ -1764,9 +1638,6 @@ int		length
 
 	CODE:
 		cfmssln(&status, dbkey, objnam, length);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1801,13 +1672,10 @@ int		cnt = 0;
 			cfmgtaso(&status, dbkey, objnam, buff, inlen, &outlen);
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmgtaso: Danger Will Robinson! (%d)\n", status);
-		} else {
-			printf("Assoc: '%s'\n", buff);
+		if (status == HSUCC) {
 			sv_setpv(sv_assoc, buff);
+		} else {
+			printf("Cfmgtaso: Danger Will Robinson! (%d)\n", status);
 		}
 
 		if (buff) {
@@ -1838,12 +1706,10 @@ int		asolen;
 	CODE:
 		sv_setiv(sv_asolen, -1);
 		cfmlaso(&status, dbkey, objnam, &asolen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else if (status != HSUCC) {
-			printf("Cfmlaso: Danger Will Robinson! (%d)\n", status);
-		} else {
+		if (status == HSUCC) {
 			sv_setiv(sv_asolen, asolen);
+		} else {
+			printf("Cfmlaso: Danger Will Robinson! (%d)\n", status);
 		}
 		RETVAL = status;
 
@@ -1865,9 +1731,6 @@ char	*assoc
 
 	CODE:
 		cfmsaso(&status, dbkey, objnam, assoc);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -1920,6 +1783,8 @@ int date		=	NO_INIT
 #/===========================================================================
 #/		cfmpind		G e t   P e r i o d s   i n   a   D a y
 #/===========================================================================
+#/		Tested:	2001/04/18
+#/===========================================================================
 int
 perl_Cfmpind(freq, count)
 int freq
@@ -1935,6 +1800,8 @@ int count		=	NO_INIT
 
 #/===========================================================================
 #/		cfmpinm		G e t   P e r i o d s   i n   a   M o n t h
+#/===========================================================================
+#/		Tested:	2001/04/18
 #/===========================================================================
 int
 perl_Cfmpinm(freq, year, month, count)
@@ -1954,6 +1821,8 @@ int count		=	NO_INIT
 #/===========================================================================
 #/		cfmpiny		G e t   P e r i o d s   i n   a   Y e a r
 #/===========================================================================
+#/		Tested:	2001/04/18
+#/===========================================================================
 int
 perl_Cfmpiny(freq, year, count)
 int freq
@@ -1970,6 +1839,8 @@ int count		=	NO_INIT
 
 #/===========================================================================
 #/		cfmwkdy		G e t   W e e k d a y   o f   a   D a t e
+#/===========================================================================
+#/		Tested:	2001/04/18
 #/===========================================================================
 int
 perl_Cfmwkdy(freq, date, wkdy)
@@ -1988,6 +1859,8 @@ int wkdy		=	NO_INIT
 #/===========================================================================
 #/		cfmbwdy		G e t   B i w e e k d a y   o f   a   D a t e
 #/===========================================================================
+#/		Tested:	2001/04/18
+#/===========================================================================
 int
 perl_Cfmbwdy(freq, date, biwkdy)
 int freq
@@ -2004,6 +1877,8 @@ int biwkdy		=	NO_INIT
 
 #/===========================================================================
 #/		cfmislp		I s   Y e a r   L e a p   Y e a r ?
+#/===========================================================================
+#/		Tested:	2001/04/18
 #/===========================================================================
 int
 perl_Cfmislp(year, leap)
@@ -2027,7 +1902,7 @@ int sfreq
 int sdate
 int select
 int tfreq
-int tdate
+int tdate		=	NO_INIT
 int relate
 
 	CODE:
@@ -2134,9 +2009,7 @@ SV			*sv;
 		natran = t_natran;
 		cfmsnm(&status, nctran, ndtran, natran, tbl);
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			for (i=0; i<3; i++) {
 				sv = newSVnv(tbl[i]);
 				av_push(misarray, sv);
@@ -2186,9 +2059,7 @@ SV			*sv;
 		}
 
 		cfmspm(&status, nctran, ndtran, natran, tbl);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			for (i=0; i<3; i++) {
 				sv = newSVnv(tbl[i]);
 				av_push(misarray, sv);
@@ -2245,9 +2116,7 @@ SV		*sv;
 		natran = t_natran;
 
 		cfmsbm(&status, nctran, ndtran, natran, tbl);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			for (i=0; i<3; i++) {
 				sv = newSViv(tbl[i]);
 				av_push(misarray, sv);
@@ -2364,9 +2233,7 @@ int		len;
 
 	CODE:
 		cfmnxwc(&status, dbkey, buffer, &class, &type, &freq);
-		if (status == HFAMER) {
-			SetErrBuff();
-		} else {
+		if (status == HSUCC) {
 			len = strlen(buffer) + 1;
 			obj = safemalloc(len);
 			strcpy(obj, buffer);
@@ -2408,9 +2275,6 @@ double	tbl
 		status = -1;
 #		cfmrdfa(&status, dbkey, objnam, wntobs, &syear, &sprd, &gotobs, 
 #				(float *)(data->data), tmiss, (float *)tbl->tbl);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -2438,9 +2302,6 @@ char	*buffer = (char *)safemalloc((inlen+1) * sizeof(char));
 
 	CODE:
 		cfmgtnl(&status, dbkey, objnam, index, buffer, inlen, &outlen);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		str = newString(buffer);
 		safefree(buffer);
 		RETVAL = status;
@@ -2526,7 +2387,7 @@ double	dtmp;
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
+			status = HBRNG;
 			worked = FALSE;
 		}
 
@@ -2540,8 +2401,6 @@ double	dtmp;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
-		} else {
-			printf("Invalid number of values in RANGE setting\n");
 		}
 
 #/		----------------------------------------------------------------------
@@ -2572,9 +2431,6 @@ double	dtmp;
 #/		----------------------------------------------------------------------
 #/		----------------------------------------------------------------------
 		cfmrrng(&status, dbkey, objnam, rng, (float *)vptr, miss, tbl);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 
 		if (worked) {
 			for (i=0; i<rlen; i++) {
@@ -2676,12 +2532,18 @@ double	dtmp;
 #/		Tested
 #/			2001/04/17
 #/===========================================================================
+#/		The last three variables are there for completeness.  They aren't
+#/		needed and, currently, aren't used.
+#/===========================================================================
 int
-perl_Cfmgtstr(dbkey, objnam, range, sv_str)
+perl_Cfmgtstr(dbkey, objnam, range, sv_str, sv_ismiss=0, inlen=0, sv_out=0)
 int		dbkey
 char	*objnam
 SV		*range
 SV		*sv_str
+SV		*sv_ismiss
+int		inlen
+SV		*sv_out
 
 	PREINIT:
 int		i;
@@ -2690,50 +2552,21 @@ SV		**svptr;
 SV		*sv;
 SV		*sv2;
 I32		ix;
-int		rlen;
 int		rng[3];
 AV		*rngarray;
 char	*buff;
 char	*str;
-char	*tmpstr;
-int		tmplen;
 int		ismiss;
-int		inlen, outlen;
-int		class;
-int		type;
-int		freq;
-int		fyear;
-int		fprd;
-int		lyear;
-int		lprd;
+int		outlen;
 
 	CODE:
 #/		----------------------------------------------------------------------
-#/		First, let's see what type of data object we are reading.  We want
-#/		to make sure that it is proper.
-#/		----------------------------------------------------------------------
-		cfmosiz(&status, dbkey, objnam, &class, &type, &freq,
-					&fyear, &fprd, &lyear, &lprd);
-
-#/		----------------------------------------------------------------------
-#/		If it isn't a string, why go on?
-#/		----------------------------------------------------------------------
-		if (worked) {
-			worked = type == HSTRNG;
-		} else {
-			printf("I need a string to use this function!\n");
-		}
-
-#/		----------------------------------------------------------------------
 #/		Check to see if we have been given a valid RANGE.
 #/		----------------------------------------------------------------------
-		if (worked) {
-			if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
-				rngarray = (AV *)SvRV(range);
-			} else {
-				printf("Bad RANGE setting\n");
-				worked = FALSE;
-			}
+		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
+			rngarray = (AV *)SvRV(range);
+		} else {
+			worked = FALSE;
 		}
 
 		if (worked && av_len(rngarray) == 2) {
@@ -2742,25 +2575,29 @@ int		lprd;
 				rng[ix] = SvIV(*svptr);
 			}
 #/			----------------------------------------------------------
-#/			This might be cheating but I believe it is correct...
-#/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
+#/			If there is no range object provided, fake one.  This
+#/			might be a scalar which ignores it.
 #/			----------------------------------------------------------
-			rlen = rng[2] - rng[1] + 1;
 		} else {
-			printf("Invalid number of values in RANGE setting\n");
+			rng[0] = 0;
+			rng[1] = 0;
+			rng[2] = 0;
 		}
 
 #/		----------------------------------------------------------------------
 #/		Get the length of the item, then get the item.
 #/		----------------------------------------------------------------------
-		if (worked) {
+		if (inlen == 0) {
 			buff = (char *)safemalloc(sizeof(char) * 2);
 			cfmgtstr(&status, dbkey, objnam, rng, buff, &ismiss, 1, &inlen);
 			worked = (status == HSUCC || status == HTRUNC);
+			safefree(buff);
+		} else if (inlen < 1) {
+			worked = FALSE;
+			status = HBLEN;
 		}
 
 		if (worked) {
-			safefree(buff);
 			buff = (char *)safemalloc((inlen +1) * sizeof(char));
 			cfmgtstr(&status, dbkey, objnam, rng, buff,
 				&ismiss, inlen, &outlen);
@@ -2770,25 +2607,29 @@ int		lprd;
 #/		----------------------------------------------------------------------
 #/		Now, if Missing Value, set it so, otherwise set the value.
 #/		----------------------------------------------------------------------
-		if (ismiss == HNAVAL) {
-			sv = newSVpv("NA", 0);
-			sv2 = newRV_noinc(sv);
-			sv_setsv(sv_str, sv2);
-			SvROK_on(sv_str);
-		} else if (ismiss == HNCVAL) {
-			sv = newSVpv("NC", 0);
-			sv2 = newRV_noinc(sv);
-			sv_setsv(sv_str, sv2);
-			SvROK_on(sv_str);
-		} else if (ismiss == HNDVAL) {
-			sv = newSVpv("ND", 0);
-			sv2 = newRV_noinc(sv);
-			sv_setsv(sv_str, sv2);
-			SvROK_on(sv_str);
-		} else {
-			sv_setpv(sv_str, buff);
+		if (worked) {
+			if (ismiss == HNAVAL) {
+				sv = newSVpv("NA", 0);
+				sv2 = newRV_noinc(sv);
+				sv_setsv(sv_str, sv2);
+				SvROK_on(sv_str);
+			} else if (ismiss == HNCVAL) {
+				sv = newSVpv("NC", 0);
+				sv2 = newRV_noinc(sv);
+				sv_setsv(sv_str, sv2);
+				SvROK_on(sv_str);
+			} else if (ismiss == HNDVAL) {
+				sv = newSVpv("ND", 0);
+				sv2 = newRV_noinc(sv);
+				sv_setsv(sv_str, sv2);
+				SvROK_on(sv_str);
+			} else {
+				sv_setpv(sv_str, buff);
+			}
 		}
-		safefree(buff);
+		if (*buff) {
+			safefree(buff);
+		}
 
 		RETVAL = status;
 
@@ -2863,7 +2704,7 @@ int		*misarray;
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
+			status = HBRNG;
 			worked = FALSE;
 		}
 
@@ -2877,8 +2718,6 @@ int		*misarray;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
-		} else {
-			printf("Invalid number of values in RANGE setting\n");
 		}
 
 #/		----------------------------------------------------------------------
@@ -2970,10 +2809,6 @@ int		*misarray;
 			safefree(strdata);
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
-
 		RETVAL = status;
 
 	OUTPUT:
@@ -3008,9 +2843,6 @@ char	buffer[255];
 		if (status == HSUCC) {
 			source = newString(buffer);
 			printf("Cfmrdfm: (%d) '%s', '%s'\n", famelen, objname, buffer);
-		}
-		if (status == HFAMER) {
-			SetErrBuff();
 		}
 		RETVAL = status;
 	OUTPUT:
@@ -3086,7 +2918,7 @@ double	*dptr;
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
+			status = HBRNG;
 			worked = FALSE;
 		}
 
@@ -3100,8 +2932,6 @@ double	*dptr;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
-		} else {
-			printf("Invalid number of values in RANGE setting\n");
 		}
 
 #/		----------------------------------------------------------------------
@@ -3111,7 +2941,7 @@ double	*dptr;
 			if (SvROK(table) && (SvTYPE(SvRV(table)) == SVt_PVAV)) {
 				tblarray = (AV *)SvRV(range);
 			} else {
-				printf("Bad MISSING TABLE setting\n");
+				status = HBMISS;
 				worked = FALSE;
 			}
 		}
@@ -3122,7 +2952,7 @@ double	*dptr;
 		if (worked && SvROK(data) && (SvTYPE(SvRV(data)) == SVt_PVAV)) {
 			datarray = (AV *)SvRV(data);
 		} else {
-			printf("Bad DATA set\n");
+			status = HUNEXP;
 			worked = FALSE;
 		}
 
@@ -3157,7 +2987,6 @@ double	*dptr;
 				if (SvROK(*svptr) && (SvTYPE(SvRV(*svptr)) == SVt_PV)) {
 					sv = SvRV(*svptr);
 					tempstr = SvPV(sv, xlen);
-					printf("string is '%s'\n", tempstr);
 					if (strncmp(tempstr, "NA", 2) == 0) {
 						missing = 1;
 					} else if (strncmp(tempstr, "NC", 2) == 0) {
@@ -3304,9 +3133,6 @@ double	*dptr;
 			worked = FALSE;
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		switch (type) {
 		  case HNUMRC:
 			if (fptr) {
@@ -3359,12 +3185,11 @@ int		rlen;
 
 	CODE:
 #/		----------------------------------------------------------------------
-#/		Check to see if we have been given a valid RANGE.
+#/		First, check to see if we have been given a valid RANGE.
 #/		----------------------------------------------------------------------
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
 			worked = FALSE;
 		}
 
@@ -3378,14 +3203,17 @@ int		rlen;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
+#/			----------------------------------------------------------
+#/			If it wasn't a valid range object it may be because we
+#/			going to write to a scalar.  Create an empty range object.
+#/			----------------------------------------------------------
 		} else {
-			printf("Invalid number of values in RANGE setting\n");
+			for (ix=0; ix<3; ix++) {
+				rng[ix] = 0;
+			}
 		}
 
 		cfmwstr(&status, dbkey, objnam, rng, val, ismiss, length);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -3429,7 +3257,7 @@ int		missing;
 		if (SvROK(range) && (SvTYPE(SvRV(range)) == SVt_PVAV)) {
 			rngarray = (AV *)SvRV(range);
 		} else {
-			printf("Bad RANGE setting\n");
+			status = HBRNG;
 			worked = FALSE;
 		}
 
@@ -3443,8 +3271,6 @@ int		missing;
 #/			[0]=freq, [1]=start, [2]=end so [2]-[1] should be nobs - 1.
 #/			----------------------------------------------------------
 			rlen = rng[2] - rng[1] + 1;
-		} else {
-			printf("Invalid number of values in RANGE setting\n");
 		}
 
 #/		----------------------------------------------------------------------
@@ -3454,7 +3280,7 @@ int		missing;
 			datarray = (AV *)SvRV(data);
 			len = av_len(datarray);
 		} else {
-			printf("Bad DATA set\n");
+			status = HUNEXP;
 		}
 
 #/		----------------------------------------------------------------------
@@ -3471,7 +3297,6 @@ int		missing;
 				if (SvROK(*svptr) && (SvTYPE(SvRV(*svptr)) == SVt_PV)) {
  					sv = SvRV(*svptr);
  					tempstr = SvPV(sv, xlen);
- 					printf("string is '%s'\n", tempstr);
  					if (strncmp(tempstr, "NA", 2) == 0) {
  						missing = 1;
  					} else if (strncmp(tempstr, "NC", 2) == 0) {
@@ -3532,9 +3357,6 @@ int		missing;
 			safefree(lptr);
 		}
 
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -3552,9 +3374,6 @@ char	*val
 
 	CODE:
 		cfmwtnl(&status, dbkey, objnam, idx, val);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -3563,7 +3382,7 @@ char	*val
 #/===========================================================================
 #/		cfmwrmt
 #/===========================================================================
-#/	BROKE
+#/		Untested and not implemented
 #/===========================================================================
 int
 perl_Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
@@ -3579,10 +3398,8 @@ double	tbl
 		status = -1;
 #		cfmwrmt(&status, dbkey, objnam, objtyp, (int *)rng,
 #				(float *)(data->data), miss, (float *)tbl->tbl);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 
@@ -3866,9 +3683,6 @@ char	*command
 
 	CODE:
 		cfmfame(&status, command);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
 	OUTPUT:
 		RETVAL
@@ -3882,10 +3696,8 @@ int		dbkey		=	NO_INIT
 
 	CODE:
 		cfmopwk(&status, &dbkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 		dbkey
@@ -3904,10 +3716,8 @@ char	buffer[HMAXSCMD];
 		cfmsinp(&status, buffer);
 		safefree(*dcmd);
 		*dcmd = newString(buffer);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 
@@ -3927,10 +3737,8 @@ int		connkey
 
 	CODE:
 		cfmoprc(&status, &dbkey, connkey);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 		dbkey
@@ -3946,10 +3754,8 @@ char	*svname
 
 	CODE:
 		cfmopre(&status, &dbkey, svname);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 		dbkey
@@ -3968,16 +3774,16 @@ char	*objnam
 
 	CODE:
 		cfmrmev(&status, dbkey, expr, optns, wdbkey, objnam);
-		if (status == HFAMER) {
-			SetErrBuff();
-		}
 		RETVAL = status;
+
 	OUTPUT:
 		RETVAL
 
 
 #/===========================================================================
 #/		cfmferr
+#/===========================================================================
+#/		???
 #/===========================================================================
 int
 perl_Cfmferr(errtxt)
@@ -3997,9 +3803,31 @@ char	buf[BIGBUF+1];
 			buf[i] = '\0';
 		}
 		errtxt = newString(buf);
-		printf("Error was '%s'\n", errtxt);
+		RETVAL = status;
 
 	OUTPUT:
 		RETVAL
 		errtxt
+
+
+#/===========================================================================
+#/		cfmlerr
+#/===========================================================================
+#/		???
+#/===========================================================================
+int
+perl_Cfmlerr(sv_len)
+SV		*sv_len
+
+	PREINIT:
+int		errlen;
+
+	CODE:
+		cfmlerr(&status, &errlen);
+		sv_setiv(sv_len, errlen);
+		RETVAL = status;
+
+	OUTPUT:
+		RETVAL
+		sv_len
 

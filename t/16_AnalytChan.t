@@ -4,26 +4,25 @@
 #			Copyright (c)2001, David Oberholtzer and Measurisk.
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Editor:	vi with tabstops=4
 #=============================================================================
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
 BEGIN { $| = 1; print "1..11\n"; }
 END {print "not ok 1\n" unless $loaded;}
-use FameHLI::API;
-use	FameHLI::API::EXT;
-use	FameHLI::API::HLI ':all';
 $loaded = 1;
 print "ok 1\n";
 $| = 1;
-require("./t/subs.pm");
 
 ######################### End of black magic.
+
+use		FameHLI::API ':all';
+use		FameHLI::API::EXT ':all';
+use		FameHLI::API::HLI ':all';
+require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -91,33 +90,33 @@ my		$wr_dat_test	=	"wr_dat_test";
 my		$text		=	"Test Value";
 my		$tmp		=	"";
 my		$log = StartTest("16_AnalytChan");
-		ShowResults($log, 1,0,"cfmini", FameHLI::API::Cfmini());
+		ShowResults($log, 1,0,"cfmini", Cfmini());
 
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmopcn", 
-			FameHLI::API::Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
+			Cfmopcn($conn, $service, $host, $user, $pwd), $conn);
 
 ;#		------------------------------------------------------------
 		ShowResults($log, 1,0,"cfmopdb(u)", 
-			FameHLI::API::Cfmopdb($dbkey, "testdb", HUMODE));
+			Cfmopdb($dbkey, "testdb", HUMODE));
 
 ;#		------------------------------------------------------------
 		printf($log "--> Using an Analytical Channel\n");
 ;#		------------------------------------------------------------
 my		$newcbkey;
 		ShowResults($log, 1,0,"cfmoprc", 
-			FameHLI::API::Cfmoprc($cbkey, $conn), $cbkey);
+			Cfmoprc($cbkey, $conn), $cbkey);
 		ShowResults($log, 1,0,"cfmgcid", 
-			FameHLI::API::Cfmgcid($cbkey, $newcbkey), $newcbkey);
+			Cfmgcid($cbkey, $newcbkey), $newcbkey);
 		ShowResults($log, 1,0,"cfmopre", 
-			FameHLI::API::Cfmopre($rbkey, $siteserver), $rbkey);
+			Cfmopre($rbkey, $siteserver), $rbkey);
 		ShowResults($log, 1,0,"cfmrmev", 
-			FameHLI::API::Cfmrmev($rbkey, "lastvalue($ticker)", "freq b",
+			Cfmrmev($rbkey, "lastvalue($ticker)", "freq b",
 				$dbkey, "ticker.last"),
 				"Please see next entry for results");
 
 		ShowResults($log, 1,0,"cfmwhat",
-			FameHLI::API::Cfmwhat($dbkey, "ticker.last",
+			Cfmwhat($dbkey, "ticker.last",
 				$class, $type, $freq, $basis, $observ,
 				$fyear, $fprd, $lyear, $lprd,
 				$cyear, $cmonth, $cday,
@@ -128,17 +127,17 @@ my		$newcbkey;
 				. "\t\t%s/%s/%s,\n"
 				. "\t\t%s/%s/%s,\n"
 				. "\t\t%s, %s",
-			FameHLI::API::EXT::ClassDesc($class),
-			FameHLI::API::EXT::TypeDesc($type),
-			FameHLI::API::EXT::FreqDesc($freq),
-			FameHLI::API::EXT::BasisDesc($basis),
-			FameHLI::API::EXT::ObservedDesc($observ),
+			ClassDesc($class),
+			TypeDesc($type),
+			FreqDesc($freq),
+			BasisDesc($basis),
+			ObservedDesc($observ),
 			$lyear, $fprd, $lyear, $lprd,
 			$cyear, $cmonth, $cday, $myear, $mmonth, $mday,
 			$desc, $doc);
 
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmcldb", FameHLI::API::Cfmcldb($dbkey));
-		ShowResults($log, 1,0,"cfmfin", FameHLI::API::Cfmfin());
+		ShowResults($log, 1,0,"cfmcldb", Cfmcldb($dbkey));
+		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }
 

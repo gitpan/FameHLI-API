@@ -18,10 +18,120 @@ require AutoLoader;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(
-	
+our	%EXPORT_TAGS = (
+	'all'	=> [ qw(
+		Cfmini
+		Cfmver
+		Cfmfin
+		Cfmsopt
+		Cfmsrng
+		Cfmsfis
+		Cfmopcn
+		Cfmgcid
+		Cfmcmmt
+		Cfmabrt
+		Cfmclcn
+		Cfmopdb
+		Cfmcldb
+		Cfmpodb
+		Cfmrsdb
+		Cfmpack
+		Cfmopdc
+		Cfmddes
+		Cfmddoc
+		Cfmgdba
+		Cfmgdbd
+		Cfmglen
+		Cfmnwob
+		Cfmalob
+		Cfmcpob
+		Cfmdlob
+		Cfmrnob
+		Cfmasrt
+		Cfmosiz
+		Cfmgdat
+		Cfmwhat
+		Cfmncnt
+		Cfmdlen
+		Cfmsdes
+		Cfmsdoc
+		Cfmsbas
+		Cfmsobs
+		Cfmgtatt
+		Cfmlatt
+		Cfmsatt
+		Cfmgnam
+		Cfmgtali
+		Cfmlali
+		Cfmsali
+		Cfmlsts
+		Cfmnlen
+		Cfmgsln
+		Cfmssln
+		Cfmgtaso
+		Cfmlaso
+		Cfmsaso
+		Cfmfdiv
+		Cfmtody
+		Cfmpind
+		Cfmpinm
+		Cfmpiny
+		Cfmwkdy
+		Cfmbwdy
+		Cfmislp
+		Cfmchfr
+		Cfmpfrq
+		Cfmufrq
+		Cfmsnm
+		Cfmspm
+		Cfmsbm
+		Cfmsdm
+		Cfmisnm
+		Cfmispm
+		Cfmisbm
+		Cfmisdm
+		Cfmissm
+		Cfminwc
+		Cfmnxwc
+		Cfmrdfa
+		Cfmgtnl
+		Cfmrrng
+		Cfmgtstr
+		Cfmgtsts
+		Cfmrdfm
+		Cfmwrng
+		Cfmwstr
+		Cfmwsts
+		Cfmwtnl
+		Cfmwrmt
+		Cfmtdat
+		Cfmdatt
+		Cfmddat
+		Cfmdatd
+		Cfmpdat
+		Cfmdatp
+		Cfmfdat
+		Cfmdatf
+		Cfmldat
+		Cfmdatl
+		Cfmidat
+		Cfmdati
+		Cfmfame
+		Cfmopwk
+		Cfmsinp 
+		Cfmoprc
+		Cfmopre
+		Cfmrmev
+		Cfmferr
+		Cfmlerr
+	) ] );
+
+our	@EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
+
+our	@EXPORT = qw(
 );
-$VERSION = '0.901';
+
+$VERSION = '0.902';
 
 bootstrap FameHLI::API $VERSION;
 
@@ -301,6 +411,18 @@ C<Cfmrmev> will look for the C<LASTVALUE> of that series.
 
 =item *
 
+FAMEISSUER - the name of a string scalar object available from the
+same MCADBS.  If you were to specify "IBM.CLOSE" for FAMESERIES
+you could specify "IBM.ISSUER" for this object.
+
+=item *
+
+FAMEDB - the name of the database which contains the data
+in the same MCADBS.  Using the examples above, you would 
+specify "PRC" as your database (North American Pricing).
+
+=item *
+
 USERNAME - If the above referenced  MCADBS requires a username 
 and password, this is where you specify it.
 
@@ -504,8 +626,12 @@ For those of you who want an on-line list of functions and
 their signatures, here it is.  
 
 Please note: Any function which does not have a set of parenthesis
-after it is not currently implemented.  This is mainly limited to
-the functions dealing with B<Missing Values>.
+after it or that has an I<x> in front of it
+is not currently implemented.  This is mainly limited to
+the functions dealing with B<Missing Values> and B<Unit of Work> stuff.
+
+The notable exception to this is C<Cfmrdfm> which is 
+broken in the C-HLI itself.
 
 =head2 Using the HLI
 
@@ -526,8 +652,8 @@ the functions dealing with B<Missing Values>.
 
   Cfmopcn(connkey, service, hostname, username, password)
   Cfmgcid(dbkey, connkey)
-  Cfmcmmt(connkey)
-  Cfmabrt(connkey)
+ x Cfmcmmt(connkey)
+ x Cfmabrt(connkey)
   Cfmclcn(connkey)
 
 =head2 Handling Databases
@@ -551,19 +677,19 @@ the functions dealing with B<Missing Values>.
 
   Cfmnwob(dbkey, objnam, class, freq, type, basis, observ)
   Cfmalob(dbkey, objnam, class, freq, type, basis, observ, 
-			numobs, numchr, growth)
+            numobs, numchr, growth)
   Cfmcpob(srckey, tarkey, srcnam, tarnam)
   Cfmdlob(dbkey, objnam)
   Cfmrnob(dbkey, oldname, newname)
-  Cfmasrt(connkey, assert_type, assertion, perspective, grouping, dblist)
+ x Cfmasrt(connkey, assert_type, assertion, perspective, grouping, dblist)
 
 =head2 Handling Data Object Information and Attributes
 
   Cfmosiz(dbkey, objname, class, type, freq, fyear, fprd, lyear, lprd)
   Cfmgdat(dbkey, objnam, freq, cdate, mdate)
   Cfmwhat(dbkey, objnam, class, type, freq, basis, observ, 
-			fyear, fprd, lyear, lprd, cyear, cmonth, cday, 
-			myear, mmonth, mday, desc, doc)
+            fyear, fprd, lyear, lprd, cyear, cmonth, cday, 
+            myear, mmonth, mday, desc, doc)
   Cfmncnt(dbkey, objnam, length)
   Cfmdlen(dbkey, objnam, deslen, doclen)
   Cfmsdes(dbkey, objnam, desc)
@@ -603,15 +729,15 @@ the functions dealing with B<Missing Values>.
 
 These are not implemented in such a way as you would want to use them.
 
-  Cfmsnm(nctran, ndtran, natran, table)
-  Cfmspm(nctran, ndtran, natran, table)
-  Cfmsbm(nctran, ndtran, natran, table)
-  Cfmsdm
-  Cfmisnm(value, ismiss)
-  Cfmispm(value, ismiss)
-  Cfmisbm
-  Cfmisdm
-  Cfmissm
+ x Cfmsnm(nctran, ndtran, natran, table)
+ x Cfmspm(nctran, ndtran, natran, table)
+ x Cfmsbm(nctran, ndtran, natran, table)
+ x Cfmsdm
+ x Cfmisnm(value, ismiss)
+ x Cfmispm(value, ismiss)
+ x Cfmisbm
+ x Cfmisdm
+ x Cfmissm
 
 =head2 Wildcarding
 
@@ -620,12 +746,12 @@ These are not implemented in such a way as you would want to use them.
 
 =head2 Reading Data
 
-  Cfmrdfa(dbkey, objnam, wntobs, syear, sprd, gotobs, data, tmiss, tbl)
+ x Cfmrdfa(dbkey, objnam, wntobs, syear, sprd, gotobs, data, tmiss, tbl)
   Cfmgtnl(dbkey, objnam, index, str, inlen, outlen)
   Cfmrrng(dbkey, objnam, range, data, miss, table)
   Cfmgtstr(dbkey, objnam, range, str)
   Cfmgtsts(dbkey, objnam, range, data)
-  Cfmrdfm(dbkey, objname, source)
+ x Cfmrdfm(dbkey, objname, source)
 
 =head2 Writing Data
 
@@ -633,7 +759,7 @@ These are not implemented in such a way as you would want to use them.
   Cfmwstr(dbkey, objnam, range, val, ismiss, length)
   Cfmwsts(dbkey, objnam, range, data)
   Cfmwtnl(dbkey, objnam, idx, val)
-  Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
+ x Cfmwrmt(dbkey, objnam, objtyp, rng, data, miss, tbl)
 
 =head2 Converting Dates
 

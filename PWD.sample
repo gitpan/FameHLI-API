@@ -1,5 +1,8 @@
-HOSTNAME=localhost
 SERVICE=mcadbs
+HOSTNAME=localhost
+FAMESERIES=ibm.close
+FAMEISSUER=ibm.issuer
+FAMEDB=prc
 USERNAME=
 PASSWORD=
 SITESERVER=mcaserv@localhost

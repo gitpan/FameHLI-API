@@ -4,25 +4,24 @@
 #			Copyright (c)2001, David Oberholtzer and Measurisk.
 #	Date:	2001/03/23
 #	Use:	Testing file for FameHLI functions
+#	Editor:	vi with tabstops=4
 #=============================================================================
 # Before `make install' is performed this script should be runnable with
 # `make test'. After `make install' it should work as `perl test.pl'
 
 ######################### We start with some black magic to print on failure.
 
-# Change 1..1 below to 1..last_test_to_print .
-# (It may become useful if the test is moved to ./t subdirectory.)
-
-BEGIN { $| = 1; print "1..11\n"; }
+BEGIN { $| = 1; print "1..17\n"; }
 END {print "not ok 1\n" unless $loaded;}
-use FameHLI::API;
-use	FameHLI::API::HLI ':all';
 $loaded = 1;
 print "ok 1\n";
 $| = 1;
-require("./t/subs.pm");
 
 ######################### End of black magic.
+
+use		FameHLI::API ':all';
+use		FameHLI::API::HLI ':all';
+require("./t/subs.pm");
 
 		$test::num	=	0;
 		$test::num	=	1;
@@ -36,7 +35,7 @@ my		$rc;
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
 my		$log = StartTest("14_ConvDates");
-		ShowResults($log, 1,0,"cfmini", FameHLI::API::Cfmini());
+		ShowResults($log, 1,0,"cfmini", Cfmini());
 
 ;#		------------------------------------------------------------
 		printf($log "--> Converting Dates\n");
@@ -52,13 +51,11 @@ my			$minute		=	30;
 my			$second		=	15;
 
 			ShowResults($log, 1,0,"cfmtdat", 
-				FameHLI::API::Cfmtdat(HSEC, $date, 
-					$hour, $minute, $second, $intradate),
+				Cfmtdat(HSEC, $date, $hour, $minute, $second, $intradate),
 				$date);
 
 			ShowResults($log, 1,0,"cfmdatt", 
-				FameHLI::API::Cfmdatt(HSEC, $date, 
-					$hour, $minute, $second, $intradate),
+				Cfmdatt(HSEC, $date, $hour, $minute, $second, $intradate),
 				"%s, %s:%s:%s", $intradate, $hour, $minute, $second);
 		}
 ;#		------------------------------------------------------------
@@ -69,22 +66,32 @@ my			$month = 0;
 my			$day = 0;
 
 			ShowResults($log, 1,0,"cfmddat", 
-				FameHLI::API::Cfmddat(HBUSNS, $date, 1999, 9, 1),
-							$date);
+				Cfmddat(HBUSNS, $date, 1999, 9, 1),
+				$date);
 
 			ShowResults($log, 1,0,"cfmdatd", 
-				FameHLI::API::Cfmdatd(HBUSNS, $date, 
-					$year, $month, $day),
+				Cfmdatd(HBUSNS, $date, $year, $month, $day),
 				"%s/%s/%s", $year, $month, $day);
 
 ;#		------------------------------------------------------------
-my			$xyear = 0;
-my			$xperiod = 0;
+my			$xyear = 2001;
+my			$xperiod = 42;
+			$date = 0;
 
-			ShowResults($log, 0,0,"cfmpdat", 999);
-			ShowResults($log, 0,0,"cfmdatp", 999);
-			ShowResults($log, 0,0,"cfmfdat", 999);
-			ShowResults($log, 0,0,"cfmdatf", 999);
+			ShowResults($log, 1,0,"cfmpdat", 
+				Cfmpdat(HBUSNS, $date, $xyear, $xperiod));
+			ShowResults($log, 1,0,"cfmdatp", 
+				Cfmdatp(HBUSNS, $date, $year, $period));
+			ShowResults($log, 1,0,"Check values", 
+				($year == $xyear and $period == $xperiod) ? HSUCC : -1,
+				"Conversion worked.");
+			ShowResults($log, 1,0,"cfmfdat", 
+				Cfmfdat(HBUSNS, $date, $xyear, $xperiod, HDEC, HFYLST));
+			ShowResults($log, 1,0,"cfmdatf", 
+				Cfmdatf(HBUSNS, $date, $year, $period, HDEC, HFYLST));
+			ShowResults($log, 1,0,"Check values", 
+				($year == $xyear and $period == $xperiod) ? HSUCC : -1,
+				"Conversion worked.");
 		}
 ;#		------------------------------------------------------------
 ;#		------------------------------------------------------------
@@ -95,12 +102,11 @@ my			$month = 0;
 my			$day = 0;
 
 			ShowResults($log, 1,0,"cfmldat", 
-				FameHLI::API::Cfmldat(HBUSNS, $date, "1sep1999",
-									HDEC, HFYFST, 1999), $date);
+				Cfmldat(HBUSNS, $date, "1sep1999", HDEC, HFYFST, 1999),
+				$date);
 
 			ShowResults($log, 1,0,"cfmdatl", 
-				FameHLI::API::Cfmdatl(HBUSNS, $date, $datestr,
-									HDEC, HFYFST),
+				Cfmdatl(HBUSNS, $date, $datestr, HDEC, HFYFST),
 				$datestr);
 		}
 ;#		------------------------------------------------------------
@@ -109,16 +115,15 @@ my			$day = 0;
 my			$image = "<YEAR>/<MZ>/<DZ>";
 
 			ShowResults($log, 1,0,"cfmidat", 
-				FameHLI::API::Cfmidat(HBUSNS, $date, "1999/09/01",
-						$image, HDEC, HFYFST), $date);
+				Cfmidat(HBUSNS, $date, "1999/09/01", $image, HDEC, HFYFST),
+				$date);
 
 			ShowResults($log, 1,0,"cfmdati", 
-				FameHLI::API::Cfmdati(HBUSNS, $date, $datestr, $image, 
-						HDEC, HFYFST), 
+				Cfmdati(HBUSNS, $date, $datestr, $image, HDEC, HFYFST), 
 				$datestr);
 		}
 
 ;#		------------------------------------------------------------
-		ShowResults($log, 1,0,"cfmfin", FameHLI::API::Cfmfin());
+		ShowResults($log, 1,0,"cfmfin", Cfmfin());
 }
 
