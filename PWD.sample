@@ -1,0 +1,7 @@
+HOSTNAME=localhost
+SERVICE=mcadbs
+USERNAME=
+PASSWORD=
+SITESERVER=mcaserv@localhost
+SPINDEX=frdb_m@localhost \$PRC_TARGET/spindex010320.db
+SPINDATE=20010320

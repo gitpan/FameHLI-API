@@ -1,0 +1,49 @@
+/*****************************************************************************
+**	File:	FameHLI_funcs.h
+**	Type:	interface library (for Perl and friends)
+**	Author:	David Oberholtzer, (daveo@obernet.com)
+**			Copyright (c)2001, David Oberholtzer and Measurisk.
+**	Date:	2001/03/23
+**	Rev:	$Id: FameHLI.h,v 1.1 2001/02/28 01:09:54 datadev Exp datadev $
+**	Use:	Access to  FAME functions in other platforms.
+*****************************************************************************/
+
+#ifndef	__FAMEHLI_FUNCS__
+#define	__FAMEHLI_FUNCS__
+
+#include <string.h>
+#include <strings.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <time.h>
+#include "hli.h"
+
+//==========================================================================
+//		D E F I N E S
+//==========================================================================
+#define	FAME_TRUE		(1==1)
+#define	FAME_FALSE		(1==0)
+#define	SMALLBUF		256
+#define	BIGBUF			1024
+#define	HNOTYET			999		/* Fame function not implemented yet */
+
+
+
+//==========================================================================
+//		F U N C T I O N   P R O T O T Y P E S
+//==========================================================================
+
+//		------------------------------------------------------------
+//		Getting FAME Errors
+//		------------------------------------------------------------
+char	*Cfmferr();
+int		Cfmlerr();
+
+//		------------------------------------------------------------
+//		O T H E R   S T U F F
+//		------------------------------------------------------------
+void	SetErrBuff();
+char	*newString(char *src);
+
+#endif	__FAMEHLI_FUNCS__
+

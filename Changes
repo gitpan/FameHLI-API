@@ -1,0 +1,16 @@
+Revision history for Perl extension FameHLI.
+
+0.1   Various times through 1999
+    - original version written using SWIG
+
+0.2   Thu Oct  5 13:23:52 2000
+	- original XS version; created by h2xs 1.19
+
+0.2   Various times through 2000
+    - enhancing performance and adding more fucntions
+
+0.9   Fri Mar 23 2001
+    - First external ALPHA tester
+
+0.901 Wed Apr 18, 2001
+    - First post to CPAN
